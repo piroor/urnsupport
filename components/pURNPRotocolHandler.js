@@ -74,17 +74,9 @@ URNProtocol.prototype = {
 			throw 'Invalid URN';
 		}
 
-//dump(input +' / '+output+'\n');
+//dump(input +' => '+output+'\n');
 
-		var channel = IOService.newChannel(output, null, null);
-/*
-		try {
-			channel = channel.QueryInterface(Components.interfaces.nsIHttpChannel);
-			channel.setRequestHeader('location', output, false);
-		}
-		catch(e) {
-		}
-*/
+		var channel = IOService.newChannel('data:text/html,<script>location.href=decodeURIComponent("'+encodeURIComponent(output)+'");</script>', null, null);
 		return channel;
 	},
 
