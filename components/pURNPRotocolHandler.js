@@ -1,4 +1,6 @@
-var IOService = Components.classes['@mozilla.org/network/io-service;1']
+const kSCHEMER = 'urn';
+
+const IOService = Components.classes['@mozilla.org/network/io-service;1']
 				.getService(Components.interfaces.nsIIOService);
 
 
@@ -8,7 +10,7 @@ function URNProtocol()
 
 URNProtocol.prototype = {
 	get contractID() {
-		return '@mozilla.org/network/protocol;1?name=urn';
+		return '@mozilla.org/network/protocol;1?name='+kSCHEMER;
 	},
 	get classDescription() {
 		return 'URN Protocol';
@@ -28,7 +30,7 @@ URNProtocol.prototype = {
 
 	/* implementation */
 
-	scheme        : 'urn',
+	scheme        : kSCHEMER,
 	defaultPort   : -1,
 	protocolFlags : Components.interfaces.nsIProtocolHandler.URI_NORELATIVE | Components.interfaces.nsIProtocolHandler.URI_NOAUTH,
 
@@ -39,9 +41,17 @@ URNProtocol.prototype = {
 
 	newURI: function(aSpec, aCharset, aBaseURI)
 	{
+		if (!aSpec.match(/^\w+:/))
+			aSpec = this.lastBase + (aSpec.indexOf('/') == 0 ? '' : '/' ) + aSpec;
+
 		var uri = Components.classes['@mozilla.org/network/simple-uri;1']
 					.createInstance(Components.interfaces.nsIURI);
-		uri.spec = aSpec;
+		try {
+			uri.spec = aSpec;
+		}
+		catch(e) {
+			dump('base: '+this.lastBase+'\nuri: '+aSpec+'\n'+e+'\n\n');
+		}
 		return uri;
 	},
 
@@ -64,6 +74,8 @@ URNProtocol.prototype = {
 			throw 'Invalid URN';
 		}
 
+//dump(input +' / '+output+'\n');
+
 		var channel = IOService.newChannel(output, null, null);
 /*
 		try {
@@ -77,6 +89,8 @@ URNProtocol.prototype = {
 	},
 
 
+
+	lastBase : '',
 
 	// IETF 
 	getURLFromURNForIETF : function(aURI)
@@ -111,6 +125,8 @@ URNProtocol.prototype = {
 
 		}
 
+		this.lastBase = 'http://www.ietf.org';
+
 		return (rfcNum) ? 'http://www.ietf.org/rfc/rfc'+rfcNum+'.txt' : uri ;
 	},
 
@@ -120,6 +136,9 @@ URNProtocol.prototype = {
 	{
 		var uri = aURI;
 		var urn_part = uri.match(/^urn:issn:(\d{4}\-\d{3}[\dx])$/i);
+
+		this.lastBase = 'http://urn.issn.org';
+
 		return (urn_part) ? 'http://urn.issn.org/urn/?issn='+urn_part[1] : uri ;
 	},
 
@@ -172,6 +191,9 @@ URNProtocol.prototype = {
 			'fr'      : 'www.amazon.fr',
 			'default' : 'www.amazon.com'
 		};
+
+		this.lastBase = 'http://'+servers[lang];
+
 		return 'http://'+servers[lang]+'/exec/obidos/ASIN/'+num;
 	},
 
@@ -184,6 +206,9 @@ URNProtocol.prototype = {
 		if (!urn_part) return uri;
 
 		var url = this.getValue(this.publicIdTable, urn_part[1].replace(/:/g, '//').replace(/\+/g, ' ')); // URN‚©‚çŒöŠJŽ¯•ÊŽq‚Ö•ÏŠ·
+
+		this.lastBase = url ? url.match(/^\w+:\/\/[^\/]+/) : '' ;
+
 		return (url) ? url : uri ;
 	},
 
