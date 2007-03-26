@@ -49,7 +49,7 @@ URNProtocol.prototype = {
 	{
 		var input   = aURI.spec;
 		var urnPart = input.match(/^urn:([^:]+):.+$/i);
-		var output  = input;
+		var output;
 
 		if (urnPart) {
 			switch(urnPart[1].toLowerCase()) {
@@ -59,6 +59,9 @@ URNProtocol.prototype = {
 				case 'isbn':     output = this.getURLFromURNForISBN(input); break;
 				case 'publicid': output = this.getURLFromURNForPublicId(input); break;
 			}
+		}
+		else {
+			throw 'Invalid URN';
 		}
 
 		var channel = IOService.newChannel(output, null, null);
@@ -125,10 +128,10 @@ URNProtocol.prototype = {
 	getURLFromURNForISBN : function(aURI)
 	{
 		var uri = aURI;
-		var urn_part = uri.match(/^urn:isbn:(\d-?\d+-?\d+-?[x\d])$/i);
+		var urn_part = uri.match(/^urn:isbn:(\d{3}-)?(\d-?\d+-?\d+-?[x\d])$/i);
 		if (!urn_part) return uri;
 
-		var num = urn_part[1].replace(/-/g, '');
+		var num = urn_part[2].replace(/-/g, '');
 
 		var countryCode = num.substring(0, 1);
 		var lang = (countryCode == 4) ? 'ja' :
@@ -136,6 +139,31 @@ URNProtocol.prototype = {
 					(countryCode == 2) ? 'fr' :
 					(countryCode == 3) ? 'de' :
 					'default' ;
+
+		/*
+			13桁ISBNのチェックディジットは10桁ISBNのチェックディジットと異なるので、
+			10桁ISBN基準で再計算する。
+		*/
+		if (urn_part[2]) {
+			var sum = (parseInt(num.charAt(0)) * 10) +
+						(parseInt(num.charAt(1)) * 9) +
+						(parseInt(num.charAt(2)) * 8) +
+						(parseInt(num.charAt(3)) * 7) +
+						(parseInt(num.charAt(4)) * 6) +
+						(parseInt(num.charAt(5)) * 5) +
+						(parseInt(num.charAt(6)) * 4) +
+						(parseInt(num.charAt(7)) * 3) +
+						(parseInt(num.charAt(8)) * 2);
+
+			var digit = (sum % 11);
+			if (digit) {
+				digit = 11 - digit;
+				if (digit == 10)
+					digit = 'X';
+			}
+
+			num = num.replace(/.$/, digit);
+		}
 
 		var servers = {
 			'ja'      : 'www.amazon.co.jp',
