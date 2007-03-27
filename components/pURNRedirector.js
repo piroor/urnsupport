@@ -1,63 +1,51 @@
-const kSCHEMER = 'urn';
+const categoryManager = Components.classes['@mozilla.org/categorymanager;1']
+						.getService(Components.interfaces.nsICategoryManager);
 
-const IOService = Components.classes['@mozilla.org/network/io-service;1']
-				.getService(Components.interfaces.nsIIOService);
-
-
-function URNProtocol()
+function URNRedirector()
 {
 }
 
-URNProtocol.prototype = {
+URNRedirector.prototype = {
 	get contractID() {
-		return '@mozilla.org/network/protocol;1?name='+kSCHEMER;
+		return '@piro.sakura.ne.jp/urnsupport/redirector;1';
 	},
 	get classDescription() {
-		return 'URN Protocol';
+		return 'URN Redirect Service';
 	},
 	get classID() {
-		return Components.ID('{4ead4d4a-db77-11db-8314-0800200c9a66}');
+		return Components.ID('{50e7d342-dc0c-11db-8314-0800200c9a66}');
 	},
 
-	QueryInterface: function(aIID)
+	QueryInterface : function(aIID)
 	{
-		if (!aIID.equals(Components.interfaces.nsIProtocolHandler) &&
+		if (!aIID.equals(Components.interfaces.nsIContentPolicy) &&
+			!aIID.equals(Components.interfaces.nsISupportsWeakReference) &&
 			!aIID.equals(Components.interfaces.nsISupports))
 			throw Components.results.NS_ERROR_NO_INTERFACE;
 		return this;
 	},
 
 
-	/* implementation */
 
-	scheme        : kSCHEMER,
-	defaultPort   : -1,
-	protocolFlags : Components.interfaces.nsIProtocolHandler.URI_NORELATIVE | Components.interfaces.nsIProtocolHandler.URI_NOAUTH,
+	TYPE_OTHER			: Components.interfaces.nsIContentPolicy.TYPE_OTHER,
+	TYPE_SCRIPT			: Components.interfaces.nsIContentPolicy.TYPE_SCRIPT,
+	TYPE_IMAGE			: Components.interfaces.nsIContentPolicy.TYPE_IMAGE,
+	TYPE_STYLESHEET		: Components.interfaces.nsIContentPolicy.TYPE_STYLESHEET,
+	TYPE_OBJECT			: Components.interfaces.nsIContentPolicy.TYPE_OBJECT,
+	TYPE_DOCUMENT		: Components.interfaces.nsIContentPolicy.TYPE_DOCUMENT,
+	TYPE_SUBDOCUMENT	: Components.interfaces.nsIContentPolicy.TYPE_SUBDOCUMENT,
+	TYPE_REFRESH		: Components.interfaces.nsIContentPolicy.TYPE_REFRESH,
+	ACCEPT				: Components.interfaces.nsIContentPolicy.ACCEPT,
+	REJECT_REQUEST		: Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
+	REJECT_TYPE			: Components.interfaces.nsIContentPolicy.REJECT_TYPE,
+	REJECT_SERVER		: Components.interfaces.nsIContentPolicy.REJECT_SERVER,
+	REJECT_OTHER		: Components.interfaces.nsIContentPolicy.REJECT_OTHER,
 
-	allowPort: function(aPort, aScheme)
+	shouldLoad : function(aContentType, aContentLocation, aRequestOrigin, aContext, aMimeTypeGuess, aExtra)
 	{
-		return false;
-	},
+		if(aContentLocation.scheme != 'urn') return this.ACCEPT;
 
-	newURI: function(aSpec, aCharset, aBaseURI)
-	{
-		if (!aSpec.match(/^\w+:/))
-			aSpec = this.lastBase + (aSpec.indexOf('/') == 0 ? '' : '/' ) + aSpec;
-
-		var uri = Components.classes['@mozilla.org/network/simple-uri;1']
-					.createInstance(Components.interfaces.nsIURI);
-		try {
-			uri.spec = aSpec;
-		}
-		catch(e) {
-			dump('base: '+this.lastBase+'\nuri: '+aSpec+'\n'+e+'\n\n');
-		}
-		return uri;
-	},
-
-	newChannel: function(aURI)
-	{
-		var input   = aURI.spec;
+		var input   = aContentLocation.spec;
 		var urnPart = input.match(/^urn:([^:]+):.+$/i);
 		var output;
 
@@ -69,20 +57,24 @@ URNProtocol.prototype = {
 				case 'isbn':     output = this.getURLFromURNForISBN(input); break;
 				case 'publicid': output = this.getURLFromURNForPublicId(input); break;
 			}
-		}
-		else {
-			throw 'Invalid URN';
-		}
 
 //dump(input +' => '+output+'\n');
 
-		var channel = IOService.newChannel('data:text/html,<script>location.href=decodeURIComponent("'+encodeURIComponent(output)+'");</script>', null, null);
-		return channel;
+			if (output)
+				aContext.loadURI(output, null, null);
+		}
+
+		return this.REJECT_REQUEST;
+	},
+
+
+	shouldProcess : function(aContentType, aContentLocation, aRequestOrigin, aContext, aMimeTypeGuess, aExtra)
+	{
+		return this.ACCEPT;
 	},
 
 
 
-	lastBase : '',
 
 	// IETF 
 	getURLFromURNForIETF : function(aURI)
@@ -117,8 +109,6 @@ URNProtocol.prototype = {
 
 		}
 
-		this.lastBase = 'http://www.ietf.org';
-
 		return (rfcNum) ? 'http://www.ietf.org/rfc/rfc'+rfcNum+'.txt' : uri ;
 	},
 
@@ -128,8 +118,6 @@ URNProtocol.prototype = {
 	{
 		var uri = aURI;
 		var urn_part = uri.match(/^urn:issn:(\d{4}\-\d{3}[\dx])$/i);
-
-		this.lastBase = 'http://urn.issn.org';
 
 		return (urn_part) ? 'http://urn.issn.org/urn/?issn='+urn_part[1] : uri ;
 	},
@@ -184,8 +172,6 @@ URNProtocol.prototype = {
 			'default' : 'www.amazon.com'
 		};
 
-		this.lastBase = 'http://'+servers[lang];
-
 		return 'http://'+servers[lang]+'/exec/obidos/ASIN/'+num;
 	},
 
@@ -198,8 +184,6 @@ URNProtocol.prototype = {
 		if (!urn_part) return uri;
 
 		var url = this.getValue(this.publicIdTable, urn_part[1].replace(/:/g, '//').replace(/\+/g, ' ')); // URN‚©‚çŒöŠJŽ¯•ÊŽq‚Ö•ÏŠ·
-
-		this.lastBase = url ? url.match(/^\w+:\/\/[^\/]+/) : '' ;
 
 		return (url) ? url : uri ;
 	},
@@ -247,6 +231,19 @@ var gModule = {
 		for (var key in this._objects) {
 			var obj = this._objects[key];
 			aComponentManager.registerFactoryLocation(obj.CID, obj.className, obj.contractID, aFileSpec, aLocation, aType);
+
+			categoryManager.addCategoryEntry('content-policy', obj.contractID, obj.contractID, true, true);
+		}
+	},
+
+	unregisterSelf : function (aComponentManager, aFileSpec, aLocation)
+	{
+		aComponentManager = aComponentManager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+		for (var key in this._objects) {
+			var obj = this._objects[key];
+			aComponentManager.unregisterFactoryLocation(obj.CID, aFileSpec);
+
+			categoryManager.deleteCategoryEntry('content-policy', obj.contractID, true);
 		}
 	},
 
@@ -265,15 +262,15 @@ var gModule = {
 
 	_objects : {
 		manager : {
-			CID        : URNProtocol.prototype.classID,
-			contractID : URNProtocol.prototype.contractID,
-			className  : URNProtocol.prototype.classDescription,
+			CID        : URNRedirector.prototype.classID,
+			contractID : URNRedirector.prototype.contractID,
+			className  : URNRedirector.prototype.classDescription,
 			factory    : {
 				createInstance : function (aOuter, aIID)
 				{
 					if (aOuter != null)
 						throw Components.results.NS_ERROR_NO_AGGREGATION;
-					return (new URNProtocol()).QueryInterface(aIID);
+					return (new URNRedirector()).QueryInterface(aIID);
 				}
 			}
 		}
