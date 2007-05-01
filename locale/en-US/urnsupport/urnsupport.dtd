@@ -1,0 +1,26 @@
+<!ENTITY config.title     "URN Support Configuration">
+
+<!ENTITY config.tabs.isbn "ISBN">
+
+<!ENTITY config.isbn.resolve_mode.caption "Redirection target for ISBN (International Standard Book Number) URNs">
+<!ENTITY config.isbn.resolve_mode.auto   "Auto-detect by region code">
+<!ENTITY config.isbn.resolve_mode.select "Select from list">
+<!ENTITY config.isbn.resolve_mode.select.0 "Amazon.com (USA)">
+<!ENTITY config.isbn.resolve_mode.select.1 "Amazon.co.jp (Japan)">
+<!ENTITY config.isbn.resolve_mode.select.2 "Amazon.co.uk (United Kingdom)">
+<!ENTITY config.isbn.resolve_mode.select.3 "Amazon.de (Germany)">
+<!ENTITY config.isbn.resolve_mode.select.4 "Amazon.fr (France)">
+<!ENTITY config.isbn.resolve_mode.manual "Manual">
+<!ENTITY config.isbn.resolver.format "&#37;isbn&#37; = ISBN without hyphenations, &#37;isbn10&#37; = ISBN without hyphenations (10 digits), &#37;isbn_raw&#37; = raw ISBN, &#37;urn&#37; = raw URN, &#37;urn_escaped&#37; = escaped raw URN">
+
+
+<!ENTITY config.tabs.nbn "NBN">
+
+<!ENTITY config.nbn.resolver "Redirection target for NBN (National Bibliography Number) URNs">
+<!ENTITY config.nbn.resolver.format "&#37;nbn&#37; = NBN part of URN, &#37;urn&#37; = raw URN, &#37;urn_escaped&#37; = escaped raw URN">
+
+
+<!ENTITY config.tabs.default "Misc">
+
+<!ENTITY config.default.resolver "Redirection target for unknown URNs">
+<!ENTITY config.default.resolver.format "&#37;urn&#37; = raw URN, &#37;urn_escaped&#37; = escaped raw URN">

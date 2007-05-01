@@ -1,0 +1,26 @@
+<!ENTITY config.title "URNサポートの設定">
+
+<!ENTITY config.tabs.isbn "ISBN">
+
+<!ENTITY config.isbn.resolve_mode.caption "ISBN（国際標準図書番号） URNのリダイレクト先">
+<!ENTITY config.isbn.resolve_mode.auto   "地域コードから自動選択">
+<!ENTITY config.isbn.resolve_mode.select "リストから選択">
+<!ENTITY config.isbn.resolve_mode.select.0 "Amazon.com（アメリカ）">
+<!ENTITY config.isbn.resolve_mode.select.1 "Amazon.co.jp（日本）">
+<!ENTITY config.isbn.resolve_mode.select.2 "Amazon.co.uk（イギリス）">
+<!ENTITY config.isbn.resolve_mode.select.3 "Amazon.de（ドイツ）">
+<!ENTITY config.isbn.resolve_mode.select.4 "Amazon.fr（フランス）">
+<!ENTITY config.isbn.resolve_mode.manual "手動設定">
+<!ENTITY config.isbn.resolver.format "&#37;isbn&#37; = ハイフンなしのISBN, &#37;isbn10&#37; = ハイフンなしの10桁ISBN, &#37;isbn_raw&#37; = 元のISBN, &#37;urn&#37; = 元のURN, &#37;urn_escaped&#37; = エスケープされた元のURN">
+
+
+<!ENTITY config.tabs.nbn "NBN">
+
+<!ENTITY config.nbn.resolver "NBN（全国書誌番号） URNのリダイレクト先">
+<!ENTITY config.nbn.resolver.format "&#37;nbn&#37; = URNのNBN部分, &#37;urn&#37; = 元のURN, &#37;urn_escaped&#37; = エスケープされた元のURN">
+
+
+<!ENTITY config.tabs.default "その他">
+
+<!ENTITY config.default.resolver "未知のURNに対するリダイレクト先">
+<!ENTITY config.default.resolver.format "&#37;urn&#37; = 元のURN, &#37;urn_escaped&#37; = エスケープされた元のURN">

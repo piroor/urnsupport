@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/"?>
+
+<!DOCTYPE prefwindow [
+<!ENTITY % mainDTD SYSTEM "chrome://urnsupport/locale/urnsupport.dtd">
+%mainDTD;
+]>
+
+<prefwindow id="urnsupport-config"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	title="&config.title;"
+	style="max-width:40em;">
+<!--	onload="sizeToContent();" -->
+
+<prefpane id="prefpane-isbn" label="&config.tabs.isbn;">
+	<preferences>
+		<preference id="extensions.urnsupport.isbn.resolve_mode"
+			name="extensions.urnsupport.isbn.resolve_mode"
+			type="int"/>
+		<preference id="extensions.urnsupport.isbn.resolvers.selected"
+			name="extensions.urnsupport.isbn.resolvers.selected"
+			type="int"/>
+		<preference id="extensions.urnsupport.isbn.resolver"
+			name="extensions.urnsupport.isbn.resolver"
+			type="string"/>
+	</preferences>
+	<groupbox>
+		<caption label="&config.isbn.resolve_mode.caption;"/>
+		<vbox>
+			<radiogroup id="extensions.urnsupport.isbn.resolve_mode-radiogroup"
+				preference="extensions.urnsupport.isbn.resolve_mode"
+				orient="vertical">
+				<radio value="0" label="&config.isbn.resolve_mode.auto;"/>
+				<radio value="1" label="&config.isbn.resolve_mode.select;"/>
+				<hbox align="center">
+					<spacer style="width:1em;"/>
+					<menulist id="extensions.urnsupport.isbn.resolvers.selected-menulist"
+						preference="extensions.urnsupport.isbn.resolvers.selected">
+						<menupopup>
+							<menuitem label="&config.isbn.resolve_mode.select.0;" value="0"/>
+							<menuitem label="&config.isbn.resolve_mode.select.1;" value="1"/>
+							<menuitem label="&config.isbn.resolve_mode.select.2;" value="2"/>
+							<menuitem label="&config.isbn.resolve_mode.select.3;" value="3"/>
+							<menuitem label="&config.isbn.resolve_mode.select.4;" value="4"/>
+						</menupopup>
+					</menulist>
+				</hbox>
+				<radio value="2" label="&config.isbn.resolve_mode.manual;"/>
+				<hbox align="center">
+					<spacer style="width:1em;"/>
+					<textbox id="extensions.urnsupport.isbn.resolver-textbox"
+						preference="extensions.urnsupport.isbn.resolver"
+						flex="1"/>
+				</hbox>
+				<hbox align="center">
+					<spacer style="width:1em;"/>
+					<description flex="1">&config.isbn.resolver.format;</description>
+				</hbox>
+			</radiogroup>
+		</vbox>
+	</groupbox>
+</prefpane>
+
+<prefpane id="prefpane-nbn" label="&config.tabs.nbn;">
+	<preferences>
+		<preference id="extensions.urnsupport.nbn.resolver"
+			name="extensions.urnsupport.nbn.resolver"
+			type="string"/>
+	</preferences>
+	<label value="&config.nbn.resolver;"
+		control="extensions.urnsupport.nbn.resolver-textbox"/>
+	<hbox>
+		<textbox id="extensions.urnsupport.nbn.resolver-textbox"
+			preference="extensions.urnsupport.nbn.resolver"
+			flex="1"/>
+	</hbox>
+	<hbox>
+		<description flex="1">&config.nbn.resolver.format;</description>
+	</hbox>
+</prefpane>
+
+<prefpane id="prefpane-default" label="&config.tabs.default;">
+	<preferences>
+		<preference id="extensions.urnsupport.default.resolver"
+			name="extensions.urnsupport.default.resolver"
+			type="string"/>
+	</preferences>
+	<label value="&config.default.resolver;"
+		control="extensions.urnsupport.default.resolver-textbox"/>
+	<hbox>
+		<textbox id="extensions.urnsupport.default.resolver-textbox"
+			preference="extensions.urnsupport.default.resolver"
+			flex="1"/>
+	</hbox>
+	<hbox>
+		<description flex="1">&config.default.resolver.format;</description>
+	</hbox>
+</prefpane>
+
+
+</prefwindow>
+

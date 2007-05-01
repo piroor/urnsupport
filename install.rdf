@@ -5,7 +5,7 @@
 
 		<em:id>{4E90A553-72C2-496f-B22E-565CB63F3604}</em:id>
 
-		<em:version>2.1.2007032701</em:version>
+		<em:version>2.2.2007050101</em:version>
 
 
 		<em:targetApplication>
@@ -21,6 +21,7 @@
 		<em:creator>SHIMODA Hiroshi</em:creator>
 		<em:homepageURL>http://piro.sakura.ne.jp/xul/_urnsupport.html.en</em:homepageURL>
 		<em:updateURL>http://piro.sakura.ne.jp/xul/xul.rdf.en</em:updateURL>
+		<em:optionsURL>chrome://urnsupport/content/config.xul</em:optionsURL>
 
 
 		<!--em:iconURL></em:iconURL-->

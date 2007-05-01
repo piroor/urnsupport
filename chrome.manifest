@@ -1,1 +1,3 @@
 content	urnsupport	jar:chrome/urnsupport.jar!/content/urnsupport/
+locale	urnsupport	en-US	jar:chrome/urnsupport.jar!/locale/en-US/urnsupport/
+locale	urnsupport	ja	jar:chrome/urnsupport.jar!/locale/ja/urnsupport/

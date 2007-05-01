@@ -72,7 +72,13 @@ URNRedirector.prototype = {
 		}
 
 		if (!redirected)
-			aContext.loadURI('http://www.google.com/search?q='+escape(urn), null, null);
+			aContext.loadURI(
+				this.getPref('extensions.urnsupport.default.resolver')
+					.replace(/%urn%/gi, input)
+					.replace(/%urn_escaped%/gi, escape(input)),
+				null,
+				null
+			);
 
 		return this.REJECT_REQUEST;
 	},
@@ -114,7 +120,9 @@ URNRedirector.prototype = {
 
 			case 'id':
 				param = this.getValue(this.ietfIdTable, param.replace(/[^a-zA-Z\d\-]/g, ''));
-				if (param) return 'http://www.ietf.org/internet-drafts/draft-'+param+'.txt';
+				if (!param) return false;
+				aContext.loadURI('http://www.ietf.org/internet-drafts/draft-'+param+'.txt', null, null);
+				return true;
 				break;
 
 		}
@@ -146,7 +154,9 @@ URNRedirector.prototype = {
 		var urn_part = uri.match(/^urn:isbn:(\d{3}-)?(\d-?\d+-?\d+-?[x\d])$/i);
 		if (!urn_part) return false;
 
-		var num = urn_part[2].replace(/-/g, '');
+		var numRaw = urn_part[2];
+
+		var num = numRaw.replace(/-/g, '');
 
 		var countryCode = num.substring(0, 1);
 		var lang = (countryCode == 4) ? 'ja' :
@@ -159,6 +169,7 @@ URNRedirector.prototype = {
 			13桁ISBNのチェックディジットは10桁ISBNのチェックディジットと異なるので、
 			10桁ISBN基準で再計算する。
 		*/
+		var num10 = num;
 		if (urn_part[2]) {
 			var sum = (parseInt(num.charAt(0)) * 10) +
 						(parseInt(num.charAt(1)) * 9) +
@@ -177,18 +188,42 @@ URNRedirector.prototype = {
 					digit = 'X';
 			}
 
-			num = num.replace(/.$/, digit);
+			num10 = num.replace(/.$/, digit);
 		}
 
-		var servers = {
-			'ja'      : 'www.amazon.co.jp',
-			'en-uk'   : 'www.amazon.co.uk',
-			'de'      : 'www.amazon.de',
-			'fr'      : 'www.amazon.fr',
-			'default' : 'www.amazon.com'
-		};
+		switch (this.getPref('extensions.urnsupport.isbn.resolve_mode'))
+		{
+			case 0:
+				var servers = {
+					'ja'      : 'www.amazon.co.jp',
+					'en-uk'   : 'www.amazon.co.uk',
+					'de'      : 'www.amazon.de',
+					'fr'      : 'www.amazon.fr',
+					'default' : 'www.amazon.com'
+				};
+				url = 'http://'+servers[lang]+'/exec/obidos/ASIN/'+num10;
+				break;
 
-		aContext.loadURI('http://'+servers[lang]+'/exec/obidos/ASIN/'+num, null, null);
+			case 1:
+				url = this.getPref('extensions.urnsupport.isbn.resolvers.'+this.getPref('extensions.urnsupport.isbn.resolvers.selected'))
+						.replace(/%isbn10%/gi, num10)
+						.replace(/%isbn%/gi, num)
+						.replace(/%isbn_raw%/gi, numRaw)
+						.replace(/%urn%/gi, aURI)
+						.replace(/%urn_escaped%/gi, escape(aURI));
+				break;
+
+			case 2:
+				url = this.getPref('extensions.urnsupport.isbn.resolver')
+						.replace(/%isbn10%/gi, num10)
+						.replace(/%isbn%/gi, num)
+						.replace(/%isbn_raw%/gi, numRaw)
+						.replace(/%urn%/gi, aURI)
+						.replace(/%urn_escaped%/gi, escape(aURI));
+				break;
+		}
+
+		aContext.loadURI(url, null, null);
 		return true;
 	},
 
@@ -209,7 +244,7 @@ URNRedirector.prototype = {
 	},
 
 
-	// NBN, powered by German National Library
+	// NBN
 	redirectURNToURLForNBN : function(aURI, aContext)
 	{
 		var uri = aURI;
@@ -331,12 +366,92 @@ URNRedirector.prototype = {
 //			case 'de':
 //			case 'se':
 			default:
-				aContext.loadURI('http://nbn-resolving.org/urn/resolver.pl?urn=urn:nbn:'+urn_part, null, null);
+				aContext.loadURI(
+					this.getPref('extensions.urnsupport.nbn.resolver')
+						.replace(/%nbn%/gi, urn_part)
+						.replace(/%urn%/gi, aURI)
+						.replace(/%urn_escaped%/gi, escape(aURI)),
+					null,
+					null
+				);
 				break;
 
 		}
 
 		return true;
+	},
+
+
+
+
+/* Save/Load Prefs */ 
+	 
+	get Prefs() 
+	{
+		if (!this._Prefs) {
+			this._Prefs = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
+		}
+		return this._Prefs;
+	},
+	_Prefs : null,
+ 
+	getPref : function(aPrefstring) 
+	{
+		try {
+			switch (this.Prefs.getPrefType(aPrefstring))
+			{
+				case this.Prefs.PREF_STRING:
+					return decodeURIComponent(escape(this.Prefs.getCharPref(aPrefstring)));
+					break;
+				case this.Prefs.PREF_INT:
+					return this.Prefs.getIntPref(aPrefstring);
+					break;
+				default:
+					return this.Prefs.getBoolPref(aPrefstring);
+					break;
+			}
+		}
+		catch(e) {
+		}
+
+		return null;
+	},
+ 
+	setPref : function(aPrefstring, aNewValue) 
+	{
+		var pref = this.Prefs ;
+		var type;
+		try {
+			type = typeof aNewValue;
+		}
+		catch(e) {
+			type = null;
+		}
+
+		switch (type)
+		{
+			case 'string':
+				pref.setCharPref(aPrefstring, unescape(encodeURIComponent(aNewValue)));
+				break;
+			case 'number':
+				pref.setIntPref(aPrefstring, parseInt(aNewValue));
+				break;
+			default:
+				pref.setBoolPref(aPrefstring, aNewValue);
+				break;
+		}
+		return true;
+	},
+ 
+	clearPref : function(aPrefstring) 
+	{
+		try {
+			this.Prefs.clearUserPref(aPrefstring);
+		}
+		catch(e) {
+		}
+
+		return;
 	},
 
 
