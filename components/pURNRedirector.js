@@ -117,7 +117,7 @@ URNRedirector.prototype = {
 	getURLFromURNForISSN : function(aURI)
 	{
 		var uri = aURI;
-		var urn_part = uri.match(/^urn:issn:(\d{4}\-\d{3}[\dx])$/i);
+		var urn_part = uri.match(/^urn:issn:(\d{4}\-?\d{3}[\dx])$/i);
 
 		return (urn_part) ? 'http://urn.issn.org/urn/?issn='+urn_part[1] : uri ;
 	},
