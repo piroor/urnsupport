@@ -119,8 +119,9 @@ URNRedirector.prototype = {
 
 		}
 
-		if (rfcNum)
-			aContext.loadURI('http://www.ietf.org/rfc/rfc'+rfcNum+'.txt', null, null);
+		if (!rfcNum) return false;
+
+		aContext.loadURI('http://www.ietf.org/rfc/rfc'+rfcNum+'.txt', null, null);
 
 		return true;
 	},
