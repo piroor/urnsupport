@@ -48,21 +48,31 @@ URNRedirector.prototype = {
 		var input   = aContentLocation.spec;
 		var urnPart = input.match(/^urn:([^:]+):.+$/i);
 		var output;
+		var redirected = false;
 
 		if (urnPart) {
 			switch(urnPart[1].toLowerCase()) {
 				default: break;
-				case 'ietf':     output = this.getURLFromURNForIETF(input); break;
-				case 'issn':     output = this.getURLFromURNForISSN(input); break;
-				case 'isbn':     output = this.getURLFromURNForISBN(input); break;
-				case 'publicid': output = this.getURLFromURNForPublicId(input); break;
+				case 'ietf':
+					redirected = this.redirectURNToURLForIETF(input, aContext);
+					break;
+				case 'issn':
+					redirected = this.redirectURNToURLForISSN(input, aContext);
+					break;
+				case 'isbn':
+					redirected = this.redirectURNToURLForISBN(input, aContext);
+					break;
+				case 'publicid':
+					redirected = this.redirectURNToURLForPublicId(input, aContext);
+					break;
+				case 'nbn':
+					redirected = this.redirectURNToURLForNBN(input, aContext);
+					break;
 			}
-
-//dump(input +' => '+output+'\n');
-
-			if (output)
-				aContext.loadURI(output, null, null);
 		}
+
+		if (!redirected)
+			aContext.loadURI('http://www.google.com/search?q='+escape(urn), null, null);
 
 		return this.REJECT_REQUEST;
 	},
@@ -77,12 +87,12 @@ URNRedirector.prototype = {
 
 
 	// IETF 
-	getURLFromURNForIETF : function(aURI)
+	redirectURNToURLForIETF : function(aURI, aContext)
 	{
 
 		var uri = aURI;
 		var urn_part = uri.match(/^urn:ietf:([^:]+):(.+)$/i);
-		if (!urn_part) return uri;
+		if (urn_part) return false;
 
 		var param  = urn_part[2],
 			rfcNum = '';
@@ -109,26 +119,31 @@ URNRedirector.prototype = {
 
 		}
 
-		return (rfcNum) ? 'http://www.ietf.org/rfc/rfc'+rfcNum+'.txt' : uri ;
+		if (rfcNum)
+			aContext.loadURI('http://www.ietf.org/rfc/rfc'+rfcNum+'.txt', null, null);
+
+		return true;
 	},
 
 
 	// ISSN 
-	getURLFromURNForISSN : function(aURI)
+	redirectURNToURLForISSN : function(aURI, aContext)
 	{
 		var uri = aURI;
 		var urn_part = uri.match(/^urn:issn:(\d{4}\-?\d{3}[\dx])$/i);
+		if (!urn_part) return false;
 
-		return (urn_part) ? 'http://urn.issn.org/urn/?issn='+urn_part[1] : uri ;
+		aContext.loadURI('http://urn.issn.org/urn/?issn='+urn_part[1], null, null);
+		return true;
 	},
 
 
 	// ISBN (Powered by Amazon) 
-	getURLFromURNForISBN : function(aURI)
+	redirectURNToURLForISBN : function(aURI, aContext)
 	{
 		var uri = aURI;
 		var urn_part = uri.match(/^urn:isbn:(\d{3}-)?(\d-?\d+-?\d+-?[x\d])$/i);
-		if (!urn_part) return uri;
+		if (!urn_part) return false;
 
 		var num = urn_part[2].replace(/-/g, '');
 
@@ -172,20 +187,155 @@ URNRedirector.prototype = {
 			'default' : 'www.amazon.com'
 		};
 
-		return 'http://'+servers[lang]+'/exec/obidos/ASIN/'+num;
+		aContext.loadURI('http://'+servers[lang]+'/exec/obidos/ASIN/'+num, null, null);
+		return true;
 	},
 
 
 	// パブリックID（公開識別子のURI的解釈） 
-	getURLFromURNForPublicId : function(aURI)
+	redirectURNToURLForPublicId : function(aURI, aContext)
 	{
 		var uri = aURI;
 		var urn_part = uri.match(/^urn:publicid:(.+)$/i);
-		if (!urn_part) return uri;
+		if (!urn_part) return false;
 
 		var url = this.getValue(this.publicIdTable, urn_part[1].replace(/:/g, '//').replace(/\+/g, ' ')); // URNから公開識別子へ変換
 
-		return (url) ? url : uri ;
+		if (!url) return false;
+
+		aContext.loadURI(url, null, null);
+		return true;
+	},
+
+
+	// NBN, powered by German National Library
+	redirectURNToURLForNBN : function(aURI, aContext)
+	{
+		var uri = aURI;
+		var urn_part = uri.match(/^urn:nbn:(.+)$/i);
+		if (!urn_part) return false;
+
+		urn_part = RegExp.$1.toLowerCase();
+		urn_part.match(/(\w{2})[-:](.+)/);
+
+		var cc = RegExp.$1;
+		switch (cc)
+		{
+/*
+			case 'jp':
+				var query = [
+						'SEARCH_DB_WATOSHO=SEARCH_DB_WATOSHO',
+						'TA_LIBRARY_DRP=99',
+						'TA_LIBRARY=01',
+						'TA_TITLE=',
+						'TA_TITLE_CO=SEARCH_CONDITION_AND',
+						'TA_AUTHOR=',
+						'TA_AUTHOR_CO=SEARCH_CONDITION_AND',
+						'TA_PLACE=',
+						'TA_PLACE_CO=SEARCH_CONDITION_AND',
+						'TA_PUB=',
+						'TA_PUB_CO=SEARCH_CONDITION_AND',
+						'TA_YEAR_FR=',
+						'TA_YEAR_TO=',
+						'TA_KENMEI=',
+						'TA_KENMEI_CO=SEARCH_CONDITION_AND',
+						'TA_BUNRUI1_DRP=00',
+						'TA_BUNRUI1=',
+						'TA_BUNRUI1_CO=SEARCH_CONDITION_AND',
+						'TA_HYOJUN1_DRP=00',
+						'TA_HYOJUN1=',
+						'TA_ZENKOKU1_DRP=20',
+						'TA_ZENKOKU1=%s',
+						'TA_SEIKYU=',
+						'TA_CODE1_DRP=01',
+						'TA_CODE1=',
+						'TA_CODE1_CO=SEARCH_CONDITION_AND',
+						'MODE_10090001%3AS2=%A1%A1%B8%A1%A1%A1%A1%A1+%BA%F7%A1%A1',
+						'ACS=SEARCH_CONDITION_AND',
+						'SKS=01',
+						'SOS=01',
+						'TOS=01',
+						'DNS=01',
+						'ID0=VSH',
+						'PAFLG0=2',
+						'TXTPATTERN0=8',
+						'ANDORFLG0=3',
+						'ID1=VT',
+						'PAFLG1=1',
+						'TXTPATTERN1=1',
+						'ANDORFLG1=1',
+						'ID2=VA',
+						'PAFLG2=1',
+						'TXTPATTERN2=1',
+						'ANDORFLG2=1',
+						'ID3=VPP',
+						'PAFLG3=2',
+						'TXTPATTERN3=1',
+						'ANDORFLG3=1',
+						'ID4=VPB',
+						'PAFLG4=2',
+						'TXTPATTERN4=1',
+						'ANDORFLG4=1',
+						'ID5=VYM',
+						'PAFLG5=2',
+						'TXTPATTERN5=1',
+						'ANDORFLG5=3',
+						'ID6=VSU',
+						'PAFLG6=1',
+						'TXTPATTERN6=1',
+						'ANDORFLG6=1',
+						'ID7=VCC',
+						'PAFLG7=3',
+						'TXTPATTERN7=1',
+						'ANDORFLG7=1',
+						'ID8=VSN',
+						'PAFLG8=3',
+						'TXTPATTERN8=1',
+						'ANDORFLG8=3',
+						'ID9=VJP',
+						'PAFLG9=3',
+						'TXTPATTERN9=1',
+						'ANDORFLG9=3',
+						'ID10=VCN',
+						'PAFLG10=1',
+						'TXTPATTERN10=1',
+						'ANDORFLG10=3',
+						'ID11=VCO',
+						'PAFLG11=3',
+						'TXTPATTERN11=1',
+						'ANDORFLG11=1',
+						'SHOSHI_SEARCH=SHOSHI_SEARCH',
+						'SEARCH_WINDOW_INFO=02',
+						'LS=7948292165',
+						'1=1'
+					].join('&');
+				query = query.replace(/%s/, RegExp.$2);
+
+				var postData = Components
+						.classes['@mozilla.org/io/string-input-stream;1']
+						.createInstance(Components.interfaces.nsIStringInputStream);
+				content = 'Content-Type: application/x-www-form-urlencoded\n'+
+						'Content-Length: '+query.length+'\n\n'+
+						query;
+				postData.setData(query, query.length);
+
+				aContext.loadURI(
+						'http://opac.ndl.go.jp/Process',
+						null,
+						postData
+					);
+				break;
+*/
+
+//			case 'de':
+//			case 'se':
+			default:
+				aContext.loadURI('http://nbn-resolving.org/urn/resolver.pl?urn=urn:nbn:'+urn_part, null, null);
+				break;
+
+		}
+
+		return true;
 	},
 
 
