@@ -20,6 +20,12 @@
 <!ENTITY config.nbn.resolver.format "&#37;nbn&#37; = NBN part of URN, &#37;urn&#37; = raw URN, &#37;urn_escaped&#37; = escaped raw URN">
 
 
+<!ENTITY config.tabs.oid "OID">
+
+<!ENTITY config.oid.resolver "Redirection target for OID (Object Identifier) URNs">
+<!ENTITY config.oid.resolver.format "&#37;oid&#37; = OID part of URN, &#37;urn&#37; = raw URN, &#37;urn_escaped&#37; = escaped raw URN">
+
+
 <!ENTITY config.tabs.default "Misc">
 
 <!ENTITY config.default.resolver "Redirection target for unknown URNs">

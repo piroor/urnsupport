@@ -52,7 +52,11 @@ URNRedirector.prototype = {
 
 		if (urnPart) {
 			switch(urnPart[1].toLowerCase()) {
+
+				// not implemented
+				case 'uuid':
 				default: break;
+
 				case 'ietf':
 					redirected = this.redirectURNToURLForIETF(input, aContext);
 					break;
@@ -67,6 +71,9 @@ URNRedirector.prototype = {
 					break;
 				case 'nbn':
 					redirected = this.redirectURNToURLForNBN(input, aContext);
+					break;
+				case 'oid':
+					redirected = this.redirectURNToURLForOID(input, aContext);
 					break;
 			}
 		}
@@ -380,6 +387,30 @@ URNRedirector.prototype = {
 
 		return true;
 	},
+
+
+
+	// OID
+	redirectURNToURLForOID : function(aURI, aContext)
+	{
+		var uri = aURI;
+		var urn_part = uri.match(/^urn:oid:(.+)$/i);
+		if (!urn_part) return false;
+
+		urn_part = RegExp.$1;
+
+		aContext.loadURI(
+			this.getPref('extensions.urnsupport.oid.resolver')
+				.replace(/%oid%/gi, urn_part)
+				.replace(/%urn%/gi, aURI)
+				.replace(/%urn_escaped%/gi, escape(aURI)),
+			null,
+			null
+		);
+
+		return true;
+	},
+
 
 
 

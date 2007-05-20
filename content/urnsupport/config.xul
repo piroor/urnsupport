@@ -80,6 +80,24 @@
 	</hbox>
 </prefpane>
 
+<prefpane id="prefpane-oid" label="&config.tabs.oid;">
+	<preferences>
+		<preference id="extensions.urnsupport.oid.resolver"
+			name="extensions.urnsupport.oid.resolver"
+			type="string"/>
+	</preferences>
+	<label value="&config.oid.resolver;"
+		control="extensions.urnsupport.oid.resolver-textbox"/>
+	<hbox>
+		<textbox id="extensions.urnsupport.oid.resolver-textbox"
+			preference="extensions.urnsupport.oid.resolver"
+			flex="1"/>
+	</hbox>
+	<hbox>
+		<description flex="1">&config.nbn.resolver.format;</description>
+	</hbox>
+</prefpane>
+
 <prefpane id="prefpane-default" label="&config.tabs.default;">
 	<preferences>
 		<preference id="extensions.urnsupport.default.resolver"
