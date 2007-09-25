@@ -105,7 +105,7 @@ URNRedirector.prototype = {
 
 		var uri = aURI;
 		var urn_part = uri.match(/^urn:ietf:([^:]+):(.+)$/i);
-		if (urn_part) return false;
+		if (!urn_part) return false;
 
 		var param  = urn_part[2],
 			rfcNum = '';
