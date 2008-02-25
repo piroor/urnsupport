@@ -22,12 +22,14 @@
     <em:localized>
       <RDF:Description em:locale="en-US"
                        em:name="URN Support"
-                       em:description="Adds URN support to the browser."/>
+                       em:description="Adds URN support to the browser."
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html.en"/>
     </em:localized>
     <em:localized>
       <RDF:Description em:locale="ja"
                        em:name="URNサポート"
-                       em:description="URN形式のURIを読み込めるようにします。"/>
+                       em:description="URN形式のURIを読み込めるようにします。"
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html"/>
     </em:localized>
 
 
