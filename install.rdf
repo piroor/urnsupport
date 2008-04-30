@@ -24,13 +24,19 @@
       <RDF:Description em:locale="en-US"
                        em:name="URN Support"
                        em:description="Adds URN support to the browser."
-                       em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html.en"/>
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html.en"
+                       em:creator="SHIMODA Hiroshi">
+        <em:developer>Maciek Niedzielski (XMPP Support)</em:developer>
+      </RDF:Description>
     </em:localized>
     <em:localized>
       <RDF:Description em:locale="ja"
                        em:name="URNサポート"
                        em:description="URN形式のURIを読み込めるようにします。"
-                       em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html"/>
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html"
+                       em:creator="SHIMODA Hiroshi">
+        <em:developer>Maciek Niedzielski (XMPP Support)</em:developer>
+      </RDF:Description>
     </em:localized>
 
 
