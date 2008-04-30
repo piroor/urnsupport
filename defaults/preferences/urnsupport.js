@@ -14,7 +14,7 @@ pref("extensions.urnsupport.isbn.resolver", "http://www.google.com/search?q=ISBN
 pref("extensions.urnsupport.nbn.resolver", "http://nbn-resolving.org/urn/resolver.pl?urn=%urn%");
 
  // powered by ASN.1 OID repository
-pref("extensions.urnsupport.oid.resolver", http://asn1.elibel.tm.fr/cgi-bin/oid/display?oid=%oid%&action=display");
+pref("extensions.urnsupport.oid.resolver", "http://asn1.elibel.tm.fr/cgi-bin/oid/display?oid=%oid%&action=display");
 
 pref("extensions.urnsupport.default.resolver", "http://www.google.com/search?q=%urn_escaped%");
 
