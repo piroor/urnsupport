@@ -26,6 +26,12 @@
 <!ENTITY config.oid.resolver.format "&#37;oid&#37; = OID part of URN, &#37;urn&#37; = raw URN, &#37;urn_escaped&#37; = escaped raw URN">
 
 
+<!ENTITY config.tabs.xmpp "XMPP">
+
+<!ENTITY config.xmpp.resolver "Redirection target for XMPP Namespace URNs">
+<!ENTITY config.xmpp.resolver.format "&#37;protocol&#37; = protocol part of URN, &#37;urn&#37; = raw URN, &#37;urn_escaped&#37; = escaped raw URN">
+
+
 <!ENTITY config.tabs.default "Misc">
 
 <!ENTITY config.default.resolver "Redirection target for unknown URNs">

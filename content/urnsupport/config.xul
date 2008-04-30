@@ -98,6 +98,24 @@
 	</hbox>
 </prefpane>
 
+<prefpane id="prefpane-xmpp" label="&config.tabs.xmpp;">
+	<preferences>
+		<preference id="extensions.urnsupport.xmpp.resolver"
+			name="extensions.urnsupport.xmpp.resolver"
+			type="string"/>
+	</preferences>
+	<label value="&config.xmpp.resolver;"
+		control="extensions.urnsupport.xmpp.resolver-textbox"/>
+	<hbox>
+		<textbox id="extensions.urnsupport.xmpp.resolver-textbox"
+			preference="extensions.urnsupport.xmpp.resolver"
+			flex="1"/>
+	</hbox>
+	<hbox>
+		<description flex="1">&config.xmpp.resolver.format;</description>
+	</hbox>
+</prefpane>
+
 <prefpane id="prefpane-default" label="&config.tabs.default;">
 	<preferences>
 		<preference id="extensions.urnsupport.default.resolver"

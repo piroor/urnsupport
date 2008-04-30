@@ -75,6 +75,9 @@ URNRedirector.prototype = {
 				case 'oid':
 					redirected = this.redirectURNToURLForOID(input, aContext);
 					break;
+				case 'xmpp':
+					redirected = this.redirectURNToURLForXMPP(input, aContext);
+					break;
 			}
 		}
 
@@ -411,6 +414,31 @@ URNRedirector.prototype = {
 		return true;
 	},
 
+
+
+
+
+	// XMPP
+	redirectURNToURLForXMPP : function(aURI, aContext)
+	{
+		var uri = aURI;
+		var urn_part = uri.match(/^urn:xmpp:(.+)$/i);
+		if (!urn_part) return false;
+
+		urn_part = RegExp.$1;
+
+		aContext.loadURI(
+			this.getPref('extensions.urnsupport.xmpp.resolver')
+				.replace(/%protocol%/gi, urn_part)
+				.replace(/%urn%/gi, aURI)
+				.replace(/%urn_escaped%/gi, escape(aURI)),
+			null,
+			null
+		);
+
+		return true;
+	},
+	
 
 
 

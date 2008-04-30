@@ -5,7 +5,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="{4E90A553-72C2-496f-B22E-565CB63F3604}"
                    em:name="URN Support"
-                   em:version="2.2.2007052001"
+                   em:version="2.2.2008050101"
                    em:creator="SHIMODA Hiroshi"
                    em:description="Adds URN support to the browser."
                    em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html.en"
@@ -13,6 +13,7 @@
 <!--
                    em:iconURL=""
 -->
+    <em:developer>Maciek Niedzielski (XMPP Support)</em:developer>
 
 
     <em:updateURL>http://piro.sakura.ne.jp/xul/update.rdf</em:updateURL>
@@ -37,7 +38,7 @@
       <!-- Firefox -->
       <RDF:Description em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                        em:minVersion="1.5"
-                       em:maxVersion="2.0.0.*" />
+                       em:maxVersion="3.0pre" />
     </em:targetApplication>
   </RDF:Description>
 </RDF:RDF>

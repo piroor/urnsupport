@@ -26,6 +26,12 @@
 <!ENTITY config.oid.resolver.format "&#37;oid&#37; = URNのOID部分, &#37;urn&#37; = 元のURN, &#37;urn_escaped&#37; = エスケープされた元のURN">
 
 
+<!ENTITY config.tabs.xmpp "XMPP">
+
+<!ENTITY config.xmpp.resolver "XMPP名前空間URNのリダイレクト先">
+<!ENTITY config.xmpp.resolver.format "&#37;protocol&#37; = URNのプロトコル部分, &#37;urn&#37; = 元のURN, &#37;urn_escaped&#37; = エスケープされた元のURN">
+
+
 <!ENTITY config.tabs.default "その他">
 
 <!ENTITY config.default.resolver "未知のURNに対するリダイレクト先">
