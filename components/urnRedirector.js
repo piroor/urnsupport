@@ -201,14 +201,13 @@ URNRedirector.prototype = {
 	// ISBN (Powered by Amazon) 
 	redirectURNToURLForISBN : function(aURI)
 	{
-		var urn_part = aURI.match(/^urn:isbn:(\d{3}-?)?(\d{1}-?\d{4}-?\d{4}-?[x\d])$/i);
+		var urn_part = aURI.match(/^urn:isbn:([-\dx].+)/i);
 		if (!urn_part) return null;
 
-		var numRaw = urn_part[2];
-
+		var numRaw = urn_part[1];
 		var num = numRaw.replace(/-/g, '');
 
-		var countryCode = urn_part[1] ? num.charAt(4) : num.charAt(0) ;
+		var countryCode = (num.length == 13) ? num.charAt(3) : num.charAt(0) ;
 		var lang = (countryCode == 4) ? 'ja' :
 					(countryCode == 1) ? 'en-uk' :
 					(countryCode == 2) ? 'fr' :
@@ -220,7 +219,8 @@ URNRedirector.prototype = {
 			10åÖISBNäÓèÄÇ≈çƒåvéZÇ∑ÇÈÅB
 		*/
 		var num10 = num;
-		if (urn_part[1]) {
+		if (num.length == 13) {
+			num = num.slice(-10);
 			var sum = (parseInt(num.charAt(0)) * 10) +
 						(parseInt(num.charAt(1)) * 9) +
 						(parseInt(num.charAt(2)) * 8) +
