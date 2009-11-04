@@ -15,7 +15,7 @@ License.
 The Original Code is the URN Support.
 
 The Initial Developer of the Original Code is SHIMODA Hiroshi.
-Portions created by the Initial Developer are Copyright (C) 2008
+Portions created by the Initial Developer are Copyright (C) 2008-2009
 the Initial Developer. All Rights Reserved.
 
 Contributor(s): SHIMODA Hiroshi <piro@p.club.ne.jp>
@@ -35,9 +35,6 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 ***** END LICENSE BLOCK *****
 */
-
-const categoryManager = Components.classes['@mozilla.org/categorymanager;1']
-						.getService(Components.interfaces.nsICategoryManager);
 
 function URNRedirector()
 {
@@ -81,52 +78,20 @@ URNRedirector.prototype = {
 
 	shouldLoad : function(aContentType, aContentLocation, aRequestOrigin, aContext, aMimeTypeGuess, aExtra)
 	{
-		if(aContentLocation.scheme != 'urn') return this.ACCEPT;
+		if (aContentLocation.scheme != 'urn') return this.ACCEPT;
 
-		var input   = aContentLocation.spec;
-		var urnPart = input.match(/^urn:([^:]+):.+$/i);
-		var output;
-		var redirected = false;
-
-		if (urnPart) {
-			switch(urnPart[1].toLowerCase()) {
-
-				// not implemented
-				case 'uuid':
-				default: break;
-
-				case 'ietf':
-					redirected = this.redirectURNToURLForIETF(input, aContext);
-					break;
-				case 'issn':
-					redirected = this.redirectURNToURLForISSN(input, aContext);
-					break;
-				case 'isbn':
-					redirected = this.redirectURNToURLForISBN(input, aContext);
-					break;
-				case 'publicid':
-					redirected = this.redirectURNToURLForPublicId(input, aContext);
-					break;
-				case 'nbn':
-					redirected = this.redirectURNToURLForNBN(input, aContext);
-					break;
-				case 'oid':
-					redirected = this.redirectURNToURLForOID(input, aContext);
-					break;
-				case 'xmpp':
-					redirected = this.redirectURNToURLForXMPP(input, aContext);
-					break;
-			}
+		var url,
+			postData = null,
+			redirected = this.redirectURNToURL(aContentLocation.spec);
+		if (typeof redirected == 'string') {
+			url = redirected;
+		}
+		else {
+			url = redirected.url;
+			postData = redirected.postData;
 		}
 
-		if (!redirected)
-			aContext.loadURI(
-				this.getPref('extensions.urnsupport.default.resolver')
-					.replace(/%urn%/gi, input)
-					.replace(/%urn_escaped%/gi, escape(input)),
-				null,
-				null
-			);
+		aContext.loadURI(url, null, postData);
 
 		return this.REJECT_REQUEST;
 	},
@@ -139,20 +104,64 @@ URNRedirector.prototype = {
 
 
 
+	redirectURNToURL : function(aURN)
+	{
+		var urnPart = aURN.match(/^urn:([^:]+):.+$/i);
+		var output;
+		var redirected = null;
+
+		if (urnPart) {
+			switch(urnPart[1].toLowerCase()) {
+
+				// not implemented
+				case 'uuid':
+				default: break;
+
+				case 'ietf':
+					redirected = this.redirectURNToURLForIETF(aURN);
+					break;
+				case 'issn':
+					redirected = this.redirectURNToURLForISSN(aURN);
+					break;
+				case 'isbn':
+					redirected = this.redirectURNToURLForISBN(aURN);
+					break;
+				case 'publicid':
+					redirected = this.redirectURNToURLForPublicId(aURN);
+					break;
+				case 'nbn':
+					redirected = this.redirectURNToURLForNBN(aURN);
+					break;
+				case 'oid':
+					redirected = this.redirectURNToURLForOID(aURN);
+					break;
+				case 'xmpp':
+					redirected = this.redirectURNToURLForXMPP(aURN);
+					break;
+			}
+		}
+
+		if (!redirected)
+			redirected = this.getPref('extensions.urnsupport.default.resolver')
+							.replace(/%urn%/gi, aURN)
+							.replace(/%urn_escaped%/gi, escape(aURN));
+
+		return redirected;
+	},
+
 
 	// IETF 
-	redirectURNToURLForIETF : function(aURI, aContext)
+	redirectURNToURLForIETF : function(aURI)
 	{
-
-		var uri = aURI;
-		var urn_part = uri.match(/^urn:ietf:([^:]+):(.+)$/i);
-		if (!urn_part) return false;
+		var urn_part = aURI.match(/^urn:ietf:([^:]+):(.+)$/i);
+		if (!urn_part) return null;
 
 		var param  = urn_part[2],
 			rfcNum = '';
 
 		switch(urn_part[1].toLowerCase()) {
-			default: break;
+			default:
+				break;
 
 			case 'rfc':
 				rfcNum = param.replace(/\D/g, '');
@@ -168,39 +177,26 @@ URNRedirector.prototype = {
 
 			case 'id':
 				param = this.getValue(this.ietfIdTable, param.replace(/[^a-zA-Z\d\-]/g, ''));
-				if (!param) return false;
-				aContext.loadURI('http://www.ietf.org/internet-drafts/draft-'+param+'.txt', null, null);
-				return true;
-				break;
-
+				return param ? 'http://www.ietf.org/internet-drafts/draft-'+param+'.txt' : null ;
 		}
 
-		if (!rfcNum) return false;
-
-		aContext.loadURI('http://www.ietf.org/rfc/rfc'+rfcNum+'.txt', null, null);
-
-		return true;
+		return rfcNum ? 'http://www.ietf.org/rfc/rfc'+rfcNum+'.txt' : null ;
 	},
 
 
 	// ISSN 
-	redirectURNToURLForISSN : function(aURI, aContext)
+	redirectURNToURLForISSN : function(aURI)
 	{
-		var uri = aURI;
-		var urn_part = uri.match(/^urn:issn:(\d{4}\-?\d{3}[\dx])$/i);
-		if (!urn_part) return false;
-
-		aContext.loadURI('http://urn.issn.org/urn/?issn='+urn_part[1], null, null);
-		return true;
+		var urn_part = aURI.match(/^urn:issn:(\d{4}\-?\d{3}[\dx])$/i);
+		return urn_part ? 'http://urn.issn.org/urn/?issn='+urn_part[1] : null ;
 	},
 
 
 	// ISBN (Powered by Amazon) 
-	redirectURNToURLForISBN : function(aURI, aContext)
+	redirectURNToURLForISBN : function(aURI)
 	{
-		var uri = aURI;
-		var urn_part = uri.match(/^urn:isbn:(\d{3}-)?(\d-?\d+-?\d+-?[x\d])$/i);
-		if (!urn_part) return false;
+		var urn_part = aURI.match(/^urn:isbn:(\d{3}-)?(\d-?\d+-?\d+-?[x\d])$/i);
+		if (!urn_part) return null;
 
 		var numRaw = urn_part[2];
 
@@ -239,8 +235,10 @@ URNRedirector.prototype = {
 			num10 = num.replace(/.$/, digit);
 		}
 
+		var url;
 		switch (this.getPref('extensions.urnsupport.isbn.resolve_mode'))
 		{
+			default:
 			case 0:
 				var servers = {
 					'ja'      : 'www.amazon.co.jp',
@@ -271,38 +269,33 @@ URNRedirector.prototype = {
 				break;
 		}
 
-		aContext.loadURI(url, null, null);
-		return true;
+		return url;
 	},
 
 
 	// パブリックID（公開識別子のURI的解釈） 
-	redirectURNToURLForPublicId : function(aURI, aContext)
+	redirectURNToURLForPublicId : function(aURI)
 	{
-		var uri = aURI;
-		var urn_part = uri.match(/^urn:publicid:(.+)$/i);
-		if (!urn_part) return false;
-
-		var url = this.getValue(this.publicIdTable, urn_part[1].replace(/:/g, '//').replace(/\+/g, ' ')); // URNから公開識別子へ変換
-
-		if (!url) return false;
-
-		aContext.loadURI(url, null, null);
-		return true;
+		var urn_part = aURI.match(/^urn:publicid:(.+)$/i);
+		return urn_part ?
+			(this.getValue(
+				this.publicIdTable,
+				urn_part[1].replace(/:/g, '//').replace(/\+/g, ' ')
+			) || null) :
+			null ;
 	},
 
 
 	// NBN
-	redirectURNToURLForNBN : function(aURI, aContext)
+	redirectURNToURLForNBN : function(aURI)
 	{
-		var uri = aURI;
-		var urn_part = uri.match(/^urn:nbn:(.+)$/i);
-		if (!urn_part) return false;
+		var urn_part = aURI.match(/^urn:nbn:(.+)$/i);
+		if (!urn_part) return null;
 
-		urn_part = RegExp.$1.toLowerCase();
-		urn_part.match(/(\w{2})[-:](.+)/);
+		var urn_part = urn_part[1].toLowerCase();
+		var match = urn_part.match(/(\w{2})[-:](.+)/);
 
-		var cc = RegExp.$1;
+		var cc = match[1];
 		switch (cc)
 		{
 /*
@@ -393,7 +386,7 @@ URNRedirector.prototype = {
 						'LS=7948292165',
 						'1=1'
 					].join('&');
-				query = query.replace(/%s/, RegExp.$2);
+				query = query.replace(/%s/, match[2]);
 
 				var postData = Components
 						.classes['@mozilla.org/io/string-input-stream;1']
@@ -403,53 +396,32 @@ URNRedirector.prototype = {
 						query;
 				postData.setData(query, query.length);
 
-				aContext.loadURI(
-						'http://opac.ndl.go.jp/Process',
-						null,
-						postData
-					);
+				return { url : 'http://opac.ndl.go.jp/Process', postData : postData };
 				break;
 */
 
 //			case 'de':
 //			case 'se':
 			default:
-				aContext.loadURI(
-					this.getPref('extensions.urnsupport.nbn.resolver')
+				return this.getPref('extensions.urnsupport.nbn.resolver')
 						.replace(/%nbn%/gi, urn_part)
 						.replace(/%urn%/gi, aURI)
-						.replace(/%urn_escaped%/gi, escape(aURI)),
-					null,
-					null
-				);
-				break;
-
+						.replace(/%urn_escaped%/gi, escape(aURI));
 		}
-
-		return true;
 	},
 
 
 
 	// OID
-	redirectURNToURLForOID : function(aURI, aContext)
+	redirectURNToURLForOID : function(aURI)
 	{
-		var uri = aURI;
-		var urn_part = uri.match(/^urn:oid:(.+)$/i);
-		if (!urn_part) return false;
-
-		urn_part = RegExp.$1;
-
-		aContext.loadURI(
+		var urn_part = aURI.match(/^urn:oid:(.+)$/i);
+		return urn_part ?
 			this.getPref('extensions.urnsupport.oid.resolver')
-				.replace(/%oid%/gi, urn_part)
+				.replace(/%oid%/gi, urn_part[1])
 				.replace(/%urn%/gi, aURI)
-				.replace(/%urn_escaped%/gi, escape(aURI)),
-			null,
-			null
-		);
-
-		return true;
+				.replace(/%urn_escaped%/gi, escape(aURI)) :
+			null ;
 	},
 
 
@@ -457,24 +429,15 @@ URNRedirector.prototype = {
 
 
 	// XMPP
-	redirectURNToURLForXMPP : function(aURI, aContext)
+	redirectURNToURLForXMPP : function(aURI)
 	{
-		var uri = aURI;
-		var urn_part = uri.match(/^urn:xmpp:(.+)$/i);
-		if (!urn_part) return false;
-
-		urn_part = RegExp.$1;
-
-		aContext.loadURI(
+		var urn_part = aURI.match(/^urn:xmpp:(.+)$/i);
+		return urn_part ?
 			this.getPref('extensions.urnsupport.xmpp.resolver')
-				.replace(/%protocol%/gi, urn_part)
+				.replace(/%protocol%/gi, urn_part[1])
 				.replace(/%urn%/gi, aURI)
-				.replace(/%urn_escaped%/gi, escape(aURI)),
-			null,
-			null
-		);
-
-		return true;
+				.replace(/%urn_escaped%/gi, escape(aURI)) :
+			null ;
 	},
 	
 
@@ -583,6 +546,8 @@ URNRedirector.prototype = {
 
 var gModule = { 
 	_firstTime: true,
+	categoryManager : Components.classes['@mozilla.org/categorymanager;1']
+						.getService(Components.interfaces.nsICategoryManager),
 
 	registerSelf : function (aComponentManager, aFileSpec, aLocation, aType)
 	{
@@ -595,7 +560,7 @@ var gModule = {
 			var obj = this._objects[key];
 			aComponentManager.registerFactoryLocation(obj.CID, obj.className, obj.contractID, aFileSpec, aLocation, aType);
 
-			categoryManager.addCategoryEntry('content-policy', obj.contractID, obj.contractID, true, true);
+			this.categoryManager.addCategoryEntry('content-policy', obj.contractID, obj.contractID, true, true);
 		}
 	},
 
@@ -606,7 +571,7 @@ var gModule = {
 			var obj = this._objects[key];
 			aComponentManager.unregisterFactoryLocation(obj.CID, aFileSpec);
 
-			categoryManager.deleteCategoryEntry('content-policy', obj.contractID, true);
+			this.categoryManager.deleteCategoryEntry('content-policy', obj.contractID, true);
 		}
 	},
 
