@@ -5,7 +5,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="{4E90A553-72C2-496f-B22E-565CB63F3604}"
                    em:name="URN Support"
-                   em:version="2.2.2008050101"
+                   em:version="2.3.2009110401"
                    em:creator="SHIMODA Hiroshi"
                    em:description="Adds URN support to the browser."
                    em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html.en"
