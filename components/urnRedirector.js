@@ -175,9 +175,13 @@ URNRedirector.prototype = {
 				rfcNum = this.getValue(this.ietfFyiTable, param.replace(/\D/g, ''));
 				break;
 
+			case 'bcp':
+				rfcNum = this.getValue(this.ietfBcpTable, param.replace(/\D/g, ''));
+				break;
+
 			case 'id':
 				param = this.getValue(this.ietfIdTable, param.replace(/[^a-zA-Z\d\-]/g, ''));
-				return param ? 'http://www.ietf.org/internet-drafts/draft-'+param+'.txt' : null ;
+				return param ? 'http://www.ietf.org/id/draft-'+param+'.txt' : null ;
 		}
 
 		return rfcNum ? 'http://www.ietf.org/rfc/rfc'+rfcNum+'.txt' : null ;
@@ -519,6 +523,7 @@ URNRedirector.prototype = {
 	// 変換テーブルのパス 
 	ietfStdTable  : 'chrome://urnsupport/content/urn-ietf-std.properties',
 	ietfFyiTable  : 'chrome://urnsupport/content/urn-ietf-fyi.properties',
+	ietfBcpTable  : 'chrome://urnsupport/content/urn-ietf-bcp.properties',
 	ietfIdTable   : 'chrome://urnsupport/content/urn-ietf-drafts.properties',
 	publicIdTable : 'chrome://urnsupport/content/urn-publicids.properties',
 
