@@ -156,27 +156,29 @@ URNRedirector.prototype = {
 		var urn_part = aURI.match(/^urn:ietf:([^:]+):(.+)$/i);
 		if (!urn_part) return null;
 
-		var param  = urn_part[2],
-			rfcNum = '';
+		var param  = urn_part[2];
+		var numPart = ('000'+param.replace(/\D/g, '')).slice(-4);
+		var rfcNum = '';
 
 		switch(urn_part[1].toLowerCase()) {
 			default:
+				rfcNum = null;
 				break;
 
 			case 'rfc':
-				rfcNum = param.replace(/\D/g, '');
+				rfcNum = numPart;
 				break;
 
 			case 'std':
-				rfcNum = this.getValue(this.ietfStdTable, param.replace(/\D/g, ''));
+				rfcNum = this.getValue(this.ietfStdTable, numPart);
 				break;
 
 			case 'fyi':
-				rfcNum = this.getValue(this.ietfFyiTable, param.replace(/\D/g, ''));
+				rfcNum = this.getValue(this.ietfFyiTable, numPart);
 				break;
 
 			case 'bcp':
-				rfcNum = this.getValue(this.ietfBcpTable, param.replace(/\D/g, ''));
+				rfcNum = this.getValue(this.ietfBcpTable, numPart);
 				break;
 
 			case 'id':
@@ -192,7 +194,7 @@ URNRedirector.prototype = {
 	redirectURNToURLForISSN : function(aURI)
 	{
 		var urn_part = aURI.match(/^urn:issn:(\d{4}\-?\d{3}[\dx])$/i);
-		return urn_part ? 'http://urn.issn.org/urn/?issn='+urn_part[1] : null ;
+		return urn_part ? 'http://urn.issn.org/urn:issn:'+urn_part[1] : null ;
 	},
 
 
