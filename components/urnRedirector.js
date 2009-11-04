@@ -182,8 +182,8 @@ URNRedirector.prototype = {
 				break;
 
 			case 'id':
-				param = this.getValue(this.ietfIdTable, param.replace(/[^a-zA-Z\d\-]/g, ''));
-				return param ? 'http://www.ietf.org/id/draft-'+param+'.txt' : null ;
+				var found = this.getValue(this.ietfIdTable, param.replace(/[^a-zA-Z\d\-]/g, ''));
+				return found ? 'http://www.ietf.org/id/draft-'+param+'.txt' : null ;
 		}
 
 		return rfcNum ? 'http://www.ietf.org/rfc/rfc'+rfcNum+'.txt' : null ;
@@ -201,14 +201,14 @@ URNRedirector.prototype = {
 	// ISBN (Powered by Amazon) 
 	redirectURNToURLForISBN : function(aURI)
 	{
-		var urn_part = aURI.match(/^urn:isbn:(\d{3}-)?(\d-?\d+-?\d+-?[x\d])$/i);
+		var urn_part = aURI.match(/^urn:isbn:(\d{3}-?)?(\d{1}-?\d{4}-?\d{4}-?[x\d])$/i);
 		if (!urn_part) return null;
 
 		var numRaw = urn_part[2];
 
 		var num = numRaw.replace(/-/g, '');
 
-		var countryCode = num.substring(0, 1);
+		var countryCode = urn_part[1] ? num.charAt(4) : num.charAt(0) ;
 		var lang = (countryCode == 4) ? 'ja' :
 					(countryCode == 1) ? 'en-uk' :
 					(countryCode == 2) ? 'fr' :
@@ -220,7 +220,7 @@ URNRedirector.prototype = {
 			10åÖISBNäÓèÄÇ≈çƒåvéZÇ∑ÇÈÅB
 		*/
 		var num10 = num;
-		if (urn_part[2]) {
+		if (urn_part[1]) {
 			var sum = (parseInt(num.charAt(0)) * 10) +
 						(parseInt(num.charAt(1)) * 9) +
 						(parseInt(num.charAt(2)) * 8) +
