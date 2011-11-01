@@ -18,7 +18,7 @@ The Initial Developer of the Original Code is SHIMODA Hiroshi.
 Portions created by the Initial Developer are Copyright (C) 2008-2009
 the Initial Developer. All Rights Reserved.
 
-Contributor(s): SHIMODA Hiroshi <piro@p.club.ne.jp>
+Contributor(s): SHIMODA Hiroshi <piro.outsider.reflex@gmail.com>
                 Maciek Niedzielski <machekku@uaznia.net>
 
 Alternatively, the contents of this file may be used under the terms of
