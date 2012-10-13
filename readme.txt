@@ -156,4 +156,4 @@ step2: NS/MozÇÃçƒãNìÆ
 
 ------------------------------------------------------------------------
 URN Support for NS6/7 & Moz & Firefox
-Copyright 2002-2003 Piro(SHIMODA Hiroshi)
+Copyright 2002-2003 Piro(YUKI "Piro" Hiroshi)

@@ -6,7 +6,7 @@
                    em:id="{4E90A553-72C2-496f-B22E-565CB63F3604}"
                    em:name="URN Support"
                    em:version="2.3.2009110401"
-                   em:creator="SHIMODA Hiroshi"
+                   em:creator="YUKI &quot;Piro&quot; Hiroshi"
                    em:description="Adds URN support to the browser."
                    em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html.en"
                    em:optionsURL="chrome://urnsupport/content/config.xul">
@@ -25,7 +25,7 @@
                        em:name="URN Support"
                        em:description="Adds URN support to the browser."
                        em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html.en"
-                       em:creator="SHIMODA Hiroshi">
+                       em:creator="YUKI &quot;Piro&quot; Hiroshi">
         <em:developer>Maciek Niedzielski (XMPP Support)</em:developer>
       </RDF:Description>
     </em:localized>
@@ -34,7 +34,7 @@
                        em:name="URNサポート"
                        em:description="URN形式のURIを読み込めるようにします。"
                        em:homepageURL="http://piro.sakura.ne.jp/xul/_urnsupport.html"
-                       em:creator="SHIMODA Hiroshi">
+                       em:creator="YUKI &quot;Piro&quot; Hiroshi">
         <em:developer>Maciek Niedzielski (XMPP Support)</em:developer>
       </RDF:Description>
     </em:localized>
