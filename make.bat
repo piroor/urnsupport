@@ -1,3 +1,3 @@
 copy buildscript\makexpi.sh .\
-bash makexpi.sh urnsupport version=0
+bash makexpi.sh -n urnsupport -o
 del makexpi.sh
