@@ -1,5 +1,7 @@
 # History
 
+ - master/HEAD
+   * Modified: "jar" archive is no longer included.
  - 2.3.2009110401
    * Works on Minefield and Firefoxx 3.6.
    * Fixed: Default services for some URNs are changed.
