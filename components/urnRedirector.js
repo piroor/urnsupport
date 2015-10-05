@@ -60,25 +60,9 @@ URNRedirector.prototype = {
 		return this;
 	},
 
-
-
-	TYPE_OTHER			: Components.interfaces.nsIContentPolicy.TYPE_OTHER,
-	TYPE_SCRIPT			: Components.interfaces.nsIContentPolicy.TYPE_SCRIPT,
-	TYPE_IMAGE			: Components.interfaces.nsIContentPolicy.TYPE_IMAGE,
-	TYPE_STYLESHEET		: Components.interfaces.nsIContentPolicy.TYPE_STYLESHEET,
-	TYPE_OBJECT			: Components.interfaces.nsIContentPolicy.TYPE_OBJECT,
-	TYPE_DOCUMENT		: Components.interfaces.nsIContentPolicy.TYPE_DOCUMENT,
-	TYPE_SUBDOCUMENT	: Components.interfaces.nsIContentPolicy.TYPE_SUBDOCUMENT,
-	TYPE_REFRESH		: Components.interfaces.nsIContentPolicy.TYPE_REFRESH,
-	ACCEPT				: Components.interfaces.nsIContentPolicy.ACCEPT,
-	REJECT_REQUEST		: Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
-	REJECT_TYPE			: Components.interfaces.nsIContentPolicy.REJECT_TYPE,
-	REJECT_SERVER		: Components.interfaces.nsIContentPolicy.REJECT_SERVER,
-	REJECT_OTHER		: Components.interfaces.nsIContentPolicy.REJECT_OTHER,
-
 	shouldLoad : function(aContentType, aContentLocation, aRequestOrigin, aContext, aMimeTypeGuess, aExtra)
 	{
-		if (aContentLocation.scheme != 'urn') return this.ACCEPT;
+		if (aContentLocation.scheme != 'urn') return Components.interfaces.nsIContentPolicy.ACCEPT;
 
 		var url,
 			postData = null,
@@ -93,13 +77,13 @@ URNRedirector.prototype = {
 
 		aContext.loadURI(url, null, postData);
 
-		return this.REJECT_REQUEST;
+		return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
 	},
 
 
 	shouldProcess : function(aContentType, aContentLocation, aRequestOrigin, aContext, aMimeTypeGuess, aExtra)
 	{
-		return this.ACCEPT;
+		return Components.interfaces.nsIContentPolicy.ACCEPT;
 	},
 
 
