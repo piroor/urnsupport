@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_name__",
+  "version": "3.0",
+  "description": "__MSG_description__",
+  "default_locale": "en_US",
+  "applications": {
+    "gecko": {
+      "id": "{4E90A553-72C2-496f-B22E-565CB63F3604}",
+      "strict_min_version": "48.0a1"
+    }
+  },
+  "background": {
+    "scripts": [
+      "common/Configs.js",
+      "common/common.js",
+      "background/service.js"
+    ]
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "chrome_style": true
+  },
+  "permissions": [
+  ]
+}
