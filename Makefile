@@ -4,10 +4,22 @@ PACKAGE_NAME = urnsupport
 
 all: xpi
 
-xpi: makexpi/makexpi.sh
+xpi: makexpi/makexpi.sh extlib/webextensions-lib-configs/Configs.js extlib/webextensions-lib-options/Options.js extlib/webextensions-lib-l10n/l10n.js
+	cp extlib/webextensions-lib-configs/Configs.js common/
+	cp extlib/webextensions-lib-options/Options.js options/
+	cp extlib/webextensions-lib-l10n/l10n.js options/
 	makexpi/makexpi.sh -n $(PACKAGE_NAME) -o
 
 makexpi/makexpi.sh:
+	git submodule update --init
+
+extlib/webextensions-lib-configs/Configs.js:
+	git submodule update --init
+
+extlib/webextensions-lib-options/Options.js:
+	git submodule update --init
+
+extlib/webextensions-lib-l10n/l10n.js:
 	git submodule update --init
 
 signed: xpi
