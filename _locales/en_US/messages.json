@@ -1,0 +1,46 @@
+{
+  "name": { "message": "URN Support" },
+  "description": { "message": "Adds URN support to the browser." },
+  "homepageURL": { "message": "http://piro.sakura.ne.jp/xul/_urnsupport.html.en" },
+  "developer": { "message": "Maciek Niedzielski (XMPP Support)" },
+
+
+  "config.title": { "message": "URN Support Configuration" },
+
+  "config.tabs.isbn": { "message": "ISBN" },
+
+  "config.isbn.resolve_mode.caption": { "message": "Redirection target for ISBN (International Standard Book Number) URNs" },
+  "config.isbn.resolve_mode.auto": { "message": "Auto-detect by region code" },
+  "config.isbn.resolve_mode.select": { "message": "Select from list" },
+  "config.isbn.resolve_mode.select.0": { "message": "Amazon.com (USA)" },
+  "config.isbn.resolve_mode.select.1": { "message": "Amazon.co.jp (Japan)" },
+  "config.isbn.resolve_mode.select.2": { "message": "Amazon.co.uk (United Kingdom)" },
+  "config.isbn.resolve_mode.select.3": { "message": "Amazon.de (Germany)" },
+  "config.isbn.resolve_mode.select.4": { "message": "Amazon.fr (France)" },
+  "config.isbn.resolve_mode.manual": { "message": "Manual" },
+  "config.isbn.resolver.format": { "message": "%isbn% = ISBN without hyphenations, %isbn10% = ISBN without hyphenations (10 digits), %isbn_raw% = raw ISBN, %urn% = raw URN, %urn_escaped% = escaped raw URN" },
+
+
+  "config.tabs.nbn": { "message": "NBN" },
+
+  "config.nbn.resolver": { "message": "Redirection target for NBN (National Bibliography Number) URNs" },
+  "config.nbn.resolver.format": { "message": "%nbn% = NBN part of URN, %urn% = raw URN, %urn_escaped% = escaped raw URN" },
+
+
+  "config.tabs.oid": { "message": "OID" },
+
+  "config.oid.resolver": { "message": "Redirection target for OID (Object Identifier) URNs" },
+  "config.oid.resolver.format": { "message": "%oid% = OID part of URN, %urn% = raw URN, %urn_escaped% = escaped raw URN" },
+
+
+  "config.tabs.xmpp": { "message": "XMPP" },
+
+  "config.xmpp.resolver": { "message": "Redirection target for XMPP Namespace URNs" },
+  "config.xmpp.resolver.format": { "message": "%protocol% = protocol part of URN, %urn% = raw URN, %urn_escaped% = escaped raw URN" },
+
+
+  "config.tabs.default": { "message": "Misc" },
+
+  "config.default.resolver": { "message": "Redirection target for unknown URNs" },
+  "config.default.resolver.format": { "message": "%urn% = raw URN, %urn_escaped% = escaped raw URN" }
+}

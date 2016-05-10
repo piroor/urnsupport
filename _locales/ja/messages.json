@@ -1,0 +1,46 @@
+{
+  "name": { "message": "URNサポート" },
+  "description": { "message": "URN形式のURIを読み込めるようにします。" },
+  "homepageURL": { "message": "http://piro.sakura.ne.jp/xul/_urnsupport.html" },
+  "developer": { "message": "Maciek Niedzielski (XMPP Support)" },
+
+
+  "config.title": { "message": "URNサポートの設定" },
+
+  "config.tabs.isbn": { "message": "ISBN" },
+
+  "config.isbn.resolve_mode.caption": { "message": "ISBN（国際標準図書番号） URNのリダイレクト先" },
+  "config.isbn.resolve_mode.auto": { "message": "地域コードから自動選択" },
+  "config.isbn.resolve_mode.select": { "message": "リストから選択" },
+  "config.isbn.resolve_mode.select.0": { "message": "Amazon.com（アメリカ）" },
+  "config.isbn.resolve_mode.select.1": { "message": "Amazon.co.jp（日本）" },
+  "config.isbn.resolve_mode.select.2": { "message": "Amazon.co.uk（イギリス）" },
+  "config.isbn.resolve_mode.select.3": { "message": "Amazon.de（ドイツ）" },
+  "config.isbn.resolve_mode.select.4": { "message": "Amazon.fr（フランス）" },
+  "config.isbn.resolve_mode.manual": { "message": "手動設定" },
+  "config.isbn.resolver.format": { "message": "%isbn% = ハイフンなしのISBN, %isbn10% = ハイフンなしの10桁ISBN, %isbn_raw% = 元のISBN, %urn% = 元のURN, %urn_escaped% = エスケープされた元のURN" },
+
+
+  "config.tabs.nbn": { "message": "NBN" },
+
+  "config.nbn.resolver": { "message": "NBN（全国書誌番号） URNのリダイレクト先" },
+  "config.nbn.resolver.format": { "message": "%nbn% = URNのNBN部分, %urn% = 元のURN, %urn_escaped% = エスケープされた元のURN" },
+
+
+  "config.tabs.oid": { "message": "OID" },
+
+  "config.oid.resolver": { "message": "OID（オブジェクト識別子） URNのリダイレクト先" },
+  "config.oid.resolver.format": { "message": "%oid% = URNのOID部分, %urn% = 元のURN, %urn_escaped% = エスケープされた元のURN" },
+
+
+  "config.tabs.xmpp": { "message": "XMPP" },
+
+  "config.xmpp.resolver": { "message": "XMPP名前空間URNのリダイレクト先" },
+  "config.xmpp.resolver.format": { "message": "%protocol% = URNのプロトコル部分, %urn% = 元のURN, %urn_escaped% = エスケープされた元のURN" },
+
+
+  "config.tabs.default": { "message": "その他" },
+
+  "config.default.resolver": { "message": "未知のURNに対するリダイレクト先" },
+  "config.default.resolver.format": { "message": "%urn% = 元のURN, %urn_escaped% = エスケープされた元のURN" }
+}
