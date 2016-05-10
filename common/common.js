@@ -19,7 +19,7 @@ Portions created by the Initial Developer are Copyright (C) 2008
 the Initial Developer. All Rights Reserved.
 
 Contributor(s): YUKI "Piro" Hiroshi <piro.outsider.reflex@gmail.com>
-                Maciek Niedzielski <machekku@uaznia.net>
+				Maciek Niedzielski <machekku@uaznia.net>
 
 Alternatively, the contents of this file may be used under the terms of
 either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,33 +36,41 @@ the terms of any one of the MPL, the GPL or the LGPL.
 ***** END LICENSE BLOCK *****
 */
 
-// 0 = amazon(auto-detect), 1 = selected, 2 = manual
-pref("extensions.urnsupport.isbn.resolve_mode", 0);
 
-pref("extensions.urnsupport.isbn.resolvers.selected", 0);
-pref("extensions.urnsupport.isbn.resolvers.0", "http://www.amazon.com/exec/obidos/ASIN/%isbn10%");
-pref("extensions.urnsupport.isbn.resolvers.1", "http://www.amazon.co.jp/exec/obidos/ASIN/%isbn10%");
-pref("extensions.urnsupport.isbn.resolvers.2", "http://www.amazon.co.uk/exec/obidos/ASIN/%isbn10%");
-pref("extensions.urnsupport.isbn.resolvers.3", "http://www.amazon.de/exec/obidos/ASIN/%isbn10%");
-pref("extensions.urnsupport.isbn.resolvers.4", "http://www.amazon.fr/exec/obidos/ASIN/%isbn10%");
+var DEBUG = true;
 
-pref("extensions.urnsupport.isbn.resolver", "http://www.google.com/search?q=ISBN+%isbn_raw%");
+function log(aMessage, ...aArgs)
+{
+	if (!DEBUG)
+		return;
 
-// powered by German National Library
-pref("extensions.urnsupport.nbn.resolver", "http://nbn-resolving.org/urn/resolver.pl?urn=%urn%");
+	if (aArgs.length > 0)
+		console.log(aMessage, aArgs);
+	else
+		console.log(aMessage);
+}
 
-// powered by OID Repository 
-pref("extensions.urnsupport.oid.resolver", "http://www.oid-info.com/cgi-bin/display?oid=%oid%&submit=Display&action=display");
+var configs = new Configs({
+	// 0 = amazon(auto-detect), 1 = selected, 2 = manual
+	isbnResolveMode: 0,
+	isbnResolversSelected: 0,
+	isbnResolvers: [
+		'http://www.amazon.com/exec/obidos/ASIN/%isbn10%',
+		'http://www.amazon.co.jp/exec/obidos/ASIN/%isbn10%',
+		'http://www.amazon.co.uk/exec/obidos/ASIN/%isbn10%',
+		'http://www.amazon.de/exec/obidos/ASIN/%isbn10%',
+		'http://www.amazon.fr/exec/obidos/ASIN/%isbn10%'
+	],
+	isbnResolver: 'http://www.google.com/search?q=ISBN+%isbn_raw%',
 
-// powered by XMPP Registrar
-pref("extensions.urnsupport.xmpp.resolver", "http://xmpp.org/protocols/%urn%/");
+	// powered by German National Library
+	nbnResolver: 'http://nbn-resolving.org/urn/resolver.pl?urn=%urn%',
 
+	// powered by OID Repository 
+	oidResolver: 'http://www.oid-info.com/cgi-bin/display?oid=%oid%&submit=Display&action=display',
 
-pref("extensions.urnsupport.default.resolver", "http://www.google.com/search?q=%urn_escaped%");
+	// powered by XMPP Registrar
+	xmppResolver: 'http://xmpp.org/protocols/%urn%/',
 
-
-pref("network.protocol-handler.expose.urn", true);
-
-
-pref("extensions.{4E90A553-72C2-496f-B22E-565CB63F3604}.name", "chrome://urnsupport/locale/urnsupport.properties") ;
-pref("extensions.{4E90A553-72C2-496f-B22E-565CB63F3604}.description", "chrome://urnsupport/locale/urnsupport.properties") ;
+	defaultResolver: 'http://www.google.com/search?q=%urn_escaped%'
+});
