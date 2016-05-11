@@ -36,39 +36,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 ***** END LICENSE BLOCK *****
 */
 
-function URNRedirector()
-{
-}
-
-URNRedirector.prototype = {
-	shouldLoad : function(aContentType, aContentLocation, aRequestOrigin, aContext, aMimeTypeGuess, aExtra)
-	{
-		if (aContentLocation.scheme != 'urn') return Components.interfaces.nsIContentPolicy.ACCEPT;
-
-		var url,
-			postData = null,
-			redirected = this.redirectURNToURL(aContentLocation.spec);
-		if (typeof redirected == 'string') {
-			url = redirected;
-		}
-		else {
-			url = redirected.url;
-			postData = redirected.postData;
-		}
-
-		aContext.loadURI(url, null, postData);
-
-		return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
-	},
-
-
-	shouldProcess : function(aContentType, aContentLocation, aRequestOrigin, aContext, aMimeTypeGuess, aExtra)
-	{
-		return Components.interfaces.nsIContentPolicy.ACCEPT;
-	},
-
-
-
+var URNRedirector = {
 	redirectURNToURL : function(aURN)
 	{
 		var urnPart = aURN.match(/^urn:([^:]+):.+$/i);
@@ -444,6 +412,29 @@ URNRedirector.prototype = {
 		return this.cachedTables[aSource][aKey] || '';
 	},
 	cachedTables : {}
-
-
 };
+
+
+navigator.registerProtocolHandler('urn', '/urn-handler?%s', 'URN Handler');
+chrome.webRequest.onBeforeRequest(
+	function(aDetails) {
+		var url = URNRedirector.redirectURNToURL(aDetails.url);
+		if (url) {
+			return {
+				redirectUrl: url
+			};
+		}
+
+		return {
+			cancel: true
+		};
+	},
+	{
+		urls: [
+			location.origin + '/urn-handler?*'
+		]
+	},
+	[
+		'blocking'
+	]
+);
