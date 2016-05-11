@@ -418,7 +418,7 @@ var URNRedirector = {
 };
 
 
-navigator.registerProtocolHandler('urn', '/urn-handler?%s', 'URN Handler');
+navigator.registerProtocolHandler('urn', location.origin + '/urn-handler?%s', 'URN Handler');
 chrome.webRequest.onBeforeRequest(
 	function(aDetails) {
 		log('HANDLING URN: '+JSON.stringify(aDetails));
