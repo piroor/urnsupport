@@ -416,29 +416,34 @@ URNRedirector.prototype = {
 
 
 	// 変換テーブルのパス 
-	ietfStdTable  : 'chrome://urnsupport/content/urn-ietf-std.properties',
-	ietfFyiTable  : 'chrome://urnsupport/content/urn-ietf-fyi.properties',
-	ietfBcpTable  : 'chrome://urnsupport/content/urn-ietf-bcp.properties',
-	ietfIdTable   : 'chrome://urnsupport/content/urn-ietf-drafts.properties',
-	publicIdTable : 'chrome://urnsupport/content/urn-publicids.properties',
+	ietfStdTable  : './urn-ietf-std.properties',
+	ietfFyiTable  : './urn-ietf-fyi.properties',
+	ietfBcpTable  : './urn-ietf-bcp.properties',
+	ietfIdTable   : './urn-ietf-drafts.properties',
+	publicIdTable : './urn-publicids.properties',
 
 	// 変換テーブルの値を得る 
 	getValue : function(aSource, aKey)
 	{
-		const stringBundleService = Components.classes['@mozilla.org/intl/stringbundle;1'].getService(Components.interfaces.nsIStringBundleService);
-
-		var strbundle = stringBundleService.createBundle(aSource);
-		var items = strbundle.getSimpleEnumeration(),
-			item;
-		while (items.hasMoreElements()) {
-			item = items.getNext();
-			item = item.QueryInterface(Components.interfaces.nsIPropertyElement);
-
-			if (item.key == aKey) return item.value || item.key;
+		if (!this.cachedTables[aSource]) {
+			let request = new XMLHttpRequest();
+			request.open('GET', aSource, false);
+			request.send();
+			let source = request.responseText;
+			let table = {};
+			source.split('\n').forEach(function(aLine) {
+				var matched = aLine.match(/^([^=]+)=(.*)/);
+				if (!matched)
+					return;
+				var key = matched[0].trim();
+				var value = matched[1].trim();
+				table[key] = value;
+			});
+			this.cachedTables[aSource] = table;
 		}
-
-		return '';
-	}
+		return this.cachedTables[aSource][aKey] || '';
+	},
+	cachedTables : {}
 
 
 };
