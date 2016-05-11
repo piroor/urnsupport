@@ -178,7 +178,7 @@ var URNRedirector = {
 		}
 
 		var url;
-		switch (configs.isbnResolveMode'))
+		switch (configs.isbnResolveMode)
 		{
 			default:
 			case 0:
