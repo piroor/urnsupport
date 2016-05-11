@@ -180,8 +180,8 @@ URNRedirector.prototype = {
 					'default' ;
 
 		/*
-			13Œ…ISBN‚Ìƒ`ƒFƒbƒNƒfƒBƒWƒbƒg‚Í10Œ…ISBN‚Ìƒ`ƒFƒbƒNƒfƒBƒWƒbƒg‚ÆˆÙ‚È‚é‚Ì‚ÅA
-			10Œ…ISBNŠî€‚ÅÄŒvZ‚·‚éB
+			13æ¡ISBNã®ãƒã‚§ãƒƒã‚¯ãƒ‡ã‚£ã‚¸ãƒƒãƒˆã¯10æ¡ISBNã®ãƒã‚§ãƒƒã‚¯ãƒ‡ã‚£ã‚¸ãƒƒãƒˆã¨ç•°ãªã‚‹ã®ã§ã€
+			10æ¡ISBNåŸºæº–ã§å†è¨ˆç®—ã™ã‚‹ã€‚
 		*/
 		var num10 = num;
 		if (num.length == 13) {
@@ -244,7 +244,7 @@ URNRedirector.prototype = {
 	},
 
 
-	// ƒpƒuƒŠƒbƒNIDiŒöŠJ¯•Êq‚ÌURI“I‰ğßj 
+	// ãƒ‘ãƒ–ãƒªãƒƒã‚¯IDï¼ˆå…¬é–‹è­˜åˆ¥å­ã®URIçš„è§£é‡ˆï¼‰ 
 	redirectURNToURLForPublicId : function(aURI)
 	{
 		var urn_part = aURI.match(/^urn:publicid:(.+)$/i);
@@ -415,14 +415,14 @@ URNRedirector.prototype = {
 
 
 
-	// •ÏŠ·ƒe[ƒuƒ‹‚ÌƒpƒX 
+	// å¤‰æ›ãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒ‘ã‚¹ 
 	ietfStdTable  : './urn-ietf-std.properties',
 	ietfFyiTable  : './urn-ietf-fyi.properties',
 	ietfBcpTable  : './urn-ietf-bcp.properties',
 	ietfIdTable   : './urn-ietf-drafts.properties',
 	publicIdTable : './urn-publicids.properties',
 
-	// •ÏŠ·ƒe[ƒuƒ‹‚Ì’l‚ğ“¾‚é 
+	// å¤‰æ›ãƒ†ãƒ¼ãƒ–ãƒ«ã®å€¤ã‚’å¾—ã‚‹ 
 	getValue : function(aSource, aKey)
 	{
 		if (!this.cachedTables[aSource]) {
