@@ -75,7 +75,7 @@ var URNRedirector = {
 		}
 
 		if (!redirected)
-			redirected = configs.defaultResolver')
+			redirected = configs.defaultResolver
 							.replace(/%urn%/gi, aURN)
 							.replace(/%urn_escaped%/gi, escape(aURN));
 
