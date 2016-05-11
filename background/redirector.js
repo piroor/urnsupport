@@ -74,10 +74,13 @@ var URNRedirector = {
 			}
 		}
 
-		if (!redirected)
+		log(' redirected: ' + redirected);
+		if (!redirected) {
 			redirected = configs.defaultResolver
 							.replace(/%urn%/gi, aURN)
 							.replace(/%urn_escaped%/gi, escape(aURN));
+			log(' redirected by default handler: ' + redirected);
+		}
 
 		return redirected;
 	},
@@ -418,7 +421,9 @@ var URNRedirector = {
 navigator.registerProtocolHandler('urn', '/urn-handler?%s', 'URN Handler');
 chrome.webRequest.onBeforeRequest(
 	function(aDetails) {
+		log('HANDLING URN: '+JSON.stringify(aDetails));
 		var url = URNRedirector.redirectURNToURL(aDetails.url);
+		log(' => ' + url);
 		if (url) {
 			return {
 				redirectUrl: url
