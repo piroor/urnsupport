@@ -22,5 +22,8 @@
     "chrome_style": true
   },
   "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
   ]
 }
