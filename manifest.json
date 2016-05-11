@@ -14,7 +14,7 @@
     "scripts": [
       "common/Configs.js",
       "common/common.js",
-      "background/service.js"
+      "background/redirector.js"
     ]
   },
   "options_ui": {

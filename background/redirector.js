@@ -41,25 +41,6 @@ function URNRedirector()
 }
 
 URNRedirector.prototype = {
-	get contractID() {
-		return '@piro.sakura.ne.jp/urnsupport/redirector;1';
-	},
-	get classDescription() {
-		return 'URN Redirect Service';
-	},
-	get classID() {
-		return Components.ID('{50e7d342-dc0c-11db-8314-0800200c9a66}');
-	},
-
-	QueryInterface : function(aIID)
-	{
-		if (!aIID.equals(Components.interfaces.nsIContentPolicy) &&
-			!aIID.equals(Components.interfaces.nsISupportsWeakReference) &&
-			!aIID.equals(Components.interfaces.nsISupports))
-			throw Components.results.NS_ERROR_NO_INTERFACE;
-		return this;
-	},
-
 	shouldLoad : function(aContentType, aContentLocation, aRequestOrigin, aContext, aMimeTypeGuess, aExtra)
 	{
 		if (aContentLocation.scheme != 'urn') return Components.interfaces.nsIContentPolicy.ACCEPT;
@@ -126,7 +107,7 @@ URNRedirector.prototype = {
 		}
 
 		if (!redirected)
-			redirected = this.getPref('extensions.urnsupport.default.resolver')
+			redirected = configs.defaultResolver')
 							.replace(/%urn%/gi, aURN)
 							.replace(/%urn_escaped%/gi, escape(aURN));
 
@@ -226,7 +207,7 @@ URNRedirector.prototype = {
 		}
 
 		var url;
-		switch (this.getPref('extensions.urnsupport.isbn.resolve_mode'))
+		switch (configs.isbnResolveMode'))
 		{
 			default:
 			case 0:
@@ -241,7 +222,7 @@ URNRedirector.prototype = {
 				break;
 
 			case 1:
-				url = this.getPref('extensions.urnsupport.isbn.resolvers.'+this.getPref('extensions.urnsupport.isbn.resolvers.selected'))
+				url = configs['isbnResolvers' + configs.isbnResolversSelected]
 						.replace(/%isbn10%/gi, num10)
 						.replace(/%isbn%/gi, num)
 						.replace(/%isbn_raw%/gi, numRaw)
@@ -250,7 +231,7 @@ URNRedirector.prototype = {
 				break;
 
 			case 2:
-				url = this.getPref('extensions.urnsupport.isbn.resolver')
+				url = configs.isbnResolver
 						.replace(/%isbn10%/gi, num10)
 						.replace(/%isbn%/gi, num)
 						.replace(/%isbn_raw%/gi, numRaw)
@@ -393,7 +374,7 @@ URNRedirector.prototype = {
 //			case 'de':
 //			case 'se':
 			default:
-				return this.getPref('extensions.urnsupport.nbn.resolver')
+				return configs.nbnResolver
 						.replace(/%nbn%/gi, urn_part)
 						.replace(/%urn%/gi, aURI)
 						.replace(/%urn_escaped%/gi, escape(aURI));
@@ -407,7 +388,7 @@ URNRedirector.prototype = {
 	{
 		var urn_part = aURI.match(/^urn:oid:(.+)$/i);
 		return urn_part ?
-			this.getPref('extensions.urnsupport.oid.resolver')
+			configs.oidResolver
 				.replace(/%oid%/gi, urn_part[1])
 				.replace(/%urn%/gi, aURI)
 				.replace(/%urn_escaped%/gi, escape(aURI)) :
@@ -423,7 +404,7 @@ URNRedirector.prototype = {
 	{
 		var urn_part = aURI.match(/^urn:xmpp:(.+)$/i);
 		return urn_part ?
-			this.getPref('extensions.urnsupport.xmpp.resolver')
+			configs.xmppResolver
 				.replace(/%protocol%/gi, urn_part[1])
 				.replace(/%urn%/gi, aURI)
 				.replace(/%urn_escaped%/gi, escape(aURI)) :
@@ -431,78 +412,6 @@ URNRedirector.prototype = {
 	},
 	
 
-
-
-
-/* Save/Load Prefs */ 
-	 
-	get Prefs() 
-	{
-		if (!this._Prefs) {
-			this._Prefs = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
-		}
-		return this._Prefs;
-	},
-	_Prefs : null,
- 
-	getPref : function(aPrefstring) 
-	{
-		try {
-			switch (this.Prefs.getPrefType(aPrefstring))
-			{
-				case this.Prefs.PREF_STRING:
-					return decodeURIComponent(escape(this.Prefs.getCharPref(aPrefstring)));
-					break;
-				case this.Prefs.PREF_INT:
-					return this.Prefs.getIntPref(aPrefstring);
-					break;
-				default:
-					return this.Prefs.getBoolPref(aPrefstring);
-					break;
-			}
-		}
-		catch(e) {
-		}
-
-		return null;
-	},
- 
-	setPref : function(aPrefstring, aNewValue) 
-	{
-		var pref = this.Prefs ;
-		var type;
-		try {
-			type = typeof aNewValue;
-		}
-		catch(e) {
-			type = null;
-		}
-
-		switch (type)
-		{
-			case 'string':
-				pref.setCharPref(aPrefstring, unescape(encodeURIComponent(aNewValue)));
-				break;
-			case 'number':
-				pref.setIntPref(aPrefstring, parseInt(aNewValue));
-				break;
-			default:
-				pref.setBoolPref(aPrefstring, aNewValue);
-				break;
-		}
-		return true;
-	},
- 
-	clearPref : function(aPrefstring) 
-	{
-		try {
-			this.Prefs.clearUserPref(aPrefstring);
-		}
-		catch(e) {
-		}
-
-		return;
-	},
 
 
 
@@ -533,75 +442,3 @@ URNRedirector.prototype = {
 
 
 };
-
-
-var gModule = { 
-	_firstTime: true,
-	categoryManager : Components.classes['@mozilla.org/categorymanager;1']
-						.getService(Components.interfaces.nsICategoryManager),
-
-	registerSelf : function (aComponentManager, aFileSpec, aLocation, aType)
-	{
-		if (this._firstTime) {
-			this._firstTime = false;
-			throw Components.results.NS_ERROR_FACTORY_REGISTER_AGAIN;
-		}
-		aComponentManager = aComponentManager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-		for (var key in this._objects) {
-			var obj = this._objects[key];
-			aComponentManager.registerFactoryLocation(obj.CID, obj.className, obj.contractID, aFileSpec, aLocation, aType);
-
-			this.categoryManager.addCategoryEntry('content-policy', obj.contractID, obj.contractID, true, true);
-		}
-	},
-
-	unregisterSelf : function (aComponentManager, aFileSpec, aLocation)
-	{
-		aComponentManager = aComponentManager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-		for (var key in this._objects) {
-			var obj = this._objects[key];
-			aComponentManager.unregisterFactoryLocation(obj.CID, aFileSpec);
-
-			this.categoryManager.deleteCategoryEntry('content-policy', obj.contractID, true);
-		}
-	},
-
-	getClassObject : function (aComponentManager, aCID, aIID)
-	{
-		if (!aIID.equals(Components.interfaces.nsIFactory))
-			throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-
-		for (var key in this._objects) {
-			if (aCID.equals(this._objects[key].CID))
-				return this._objects[key].factory;
-		}
-
-		throw Components.results.NS_ERROR_NO_INTERFACE;
-	},
-
-	_objects : {
-		manager : {
-			CID        : URNRedirector.prototype.classID,
-			contractID : URNRedirector.prototype.contractID,
-			className  : URNRedirector.prototype.classDescription,
-			factory    : {
-				createInstance : function (aOuter, aIID)
-				{
-					if (aOuter != null)
-						throw Components.results.NS_ERROR_NO_AGGREGATION;
-					return (new URNRedirector()).QueryInterface(aIID);
-				}
-			}
-		}
-	},
-
-	canUnload : function (aComponentManager)
-	{
-		return true;
-	}
-};
-
-function NSGetModule(compMgr, fileSpec)
-{
-	return gModule;
-}
