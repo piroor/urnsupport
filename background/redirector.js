@@ -193,7 +193,7 @@ var URNRedirector = {
 				break;
 
 			case 1:
-				url = configs['isbnResolvers' + configs.isbnResolversSelected]
+				url = configs.isbnResolvers[configs.isbnResolversSelected]
 						.replace(/%isbn10%/gi, num10)
 						.replace(/%isbn%/gi, num)
 						.replace(/%isbn_raw%/gi, numRaw)
