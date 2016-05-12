@@ -37,8 +37,13 @@ the terms of any one of the MPL, the GPL or the LGPL.
 */
 
 var URNRedirector = {
+	initialized : false,
+
 	redirectURNToURL : function(aURN)
 	{
+		if (!this.initialized)
+			return '';
+
 		var urnPart = aURN.match(/^urn:([^:]+):.+$/i);
 		var output;
 		var redirected = null;
@@ -106,19 +111,19 @@ var URNRedirector = {
 				break;
 
 			case 'std':
-				rfcNum = this.getValue(this.ietfStdTable, numPart);
+				rfcNum = this.tables.ietfStdTable[numPart];
 				break;
 
 			case 'fyi':
-				rfcNum = this.getValue(this.ietfFyiTable, numPart);
+				rfcNum = this.tables.ietfFyiTable[numPart];
 				break;
 
 			case 'bcp':
-				rfcNum = this.getValue(this.ietfBcpTable, numPart);
+				rfcNum = this.tables.ietfBcpTable[numPart];
 				break;
 
 			case 'id':
-				var found = this.getValue(this.ietfIdTable, param.replace(/[^a-zA-Z\d\-]/g, ''));
+				var found = this.tables.ietfIdTable[param.replace(/[^a-zA-Z\d\-]/g, '')];
 				return found ? 'http://www.ietf.org/id/draft-'+param+'.txt' : null ;
 		}
 
@@ -219,12 +224,11 @@ var URNRedirector = {
 	redirectURNToURLForPublicId : function(aURI)
 	{
 		var urn_part = aURI.match(/^urn:publicid:(.+)$/i);
-		return urn_part ?
-			(this.getValue(
-				this.publicIdTable,
-				urn_part[1].replace(/:/g, '//').replace(/\+/g, ' ')
-			) || null) :
-			null ;
+		if (!urn_part)
+			return null;
+
+		var key = urn_part[1].replace(/:/g, '//').replace(/\+/g, ' ');
+		return this.tables.publicIdTable[key] || null;
 	},
 
 
@@ -381,49 +385,22 @@ var URNRedirector = {
 				.replace(/%urn_escaped%/gi, escape(aURI)) :
 			null ;
 	},
-	
 
 
 
-
-	// 変換テーブルのパス 
-	ietfStdTable  : './urn-ietf-std.properties',
-	ietfFyiTable  : './urn-ietf-fyi.properties',
-	ietfBcpTable  : './urn-ietf-bcp.properties',
-	ietfIdTable   : './urn-ietf-drafts.properties',
-	publicIdTable : './urn-publicids.properties',
-
-	// 変換テーブルの値を得る 
-	getValue : function(aSource, aKey)
+	fetchAllTables : function()
 	{
-		if (!this.cachedTables[aSource]) {
-			let request = new XMLHttpRequest();
-			request.open('GET', aSource, false);
-			request.send();
-			let source = request.responseText;
-			let table = {};
-			source.split('\n').forEach(function(aLine) {
-				var matched = aLine.match(/^([^=]+)=(.*)/);
-				if (!matched)
-					return;
-				var key = matched[0].trim();
-				var value = matched[1].trim();
-				table[key] = value;
-			});
-			this.cachedTables[aSource] = table;
-		}
-		return this.cachedTables[aSource][aKey] || '';
+		return Tables.all.then((function(aTables) {
+			this.tables = Tables.all;
+		}).bind(this));
 	},
-	cachedTables : {}
-};
 
 
-navigator.registerProtocolHandler('urn', location.origin + '/urn-handler?%s', 'URN Handler');
-chrome.webRequest.onBeforeRequest(
-	function(aDetails) {
-		log('HANDLING URN: '+JSON.stringify(aDetails));
-		var url = URNRedirector.redirectURNToURL(aDetails.url);
-		log(' => ' + url);
+	onBeforeRequest : function(aDetails) {
+		log('HANDLING REQUEST: '+JSON.stringify(aDetails));
+		var urn = decodeURIComponent(aDetails.url.replace(/^.+urn-handler\//, ''));
+		var url = this.redirectURNToURL(urn);
+		log(urn + ' => ' + url);
 		if (url) {
 			return {
 				redirectUrl: url
@@ -434,12 +411,33 @@ chrome.webRequest.onBeforeRequest(
 			cancel: true
 		};
 	},
+
+	registerFilter : function()
 	{
-		urls: [
-			location.origin + '/urn-handler?*'
-		]
+		chrome.webRequest.onBeforeRequest.addListener(
+			this.onBeforeRequest.bind(this),
+			{
+				urls: [
+					'*://*/urn-handler/*'
+				]
+			},
+			[
+				'blocking'
+			]
+		);
 	},
-	[
-		'blocking'
-	]
-);
+
+	init : function()
+	{
+		return configs.$loaded
+				.then((function() {
+					return this.fetchAllTables();
+				}).bind(this))
+				.then((function() {
+					this.initialized = true;
+					this.registerFilter();
+				}).bind(this));
+	}
+};
+
+URNRedirector.init();

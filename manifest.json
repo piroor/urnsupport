@@ -14,14 +14,28 @@
     "scripts": [
       "common/Configs.js",
       "common/common.js",
+      "background/tables.js",
       "background/redirector.js"
     ]
   },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content_scripts/registerer.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
   "options_ui": {
     "page": "options/options.html",
     "chrome_style": true
   },
   "permissions": [
+    "storage",
     "webRequest",
     "webRequestBlocking",
     "<all_urls>"
