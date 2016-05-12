@@ -15,7 +15,8 @@
       "common/Configs.js",
       "common/common.js",
       "background/tables.js",
-      "background/redirector.js"
+      "background/redirector.js",
+      "background/installed.js"
     ]
   },
   "content_scripts": [
