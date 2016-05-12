@@ -51,6 +51,8 @@ function log(aMessage, ...aArgs)
 }
 
 var configs = new Configs({
+	protocolHandlerUrl: 'https://piro.sakura.ne.jp/xul/urnsupport/handler?urn=',
+
 	// 0 = amazon(auto-detect), 1 = selected, 2 = manual
 	isbnResolveMode: 0,
 	isbnResolversSelected: 0,

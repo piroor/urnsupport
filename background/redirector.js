@@ -398,7 +398,10 @@ var URNRedirector = {
 
 	onBeforeRequest : function(aDetails) {
 		log('HANDLING REQUEST: '+JSON.stringify(aDetails));
-		var urn = decodeURIComponent(aDetails.url.replace(/^.+urn-handler\//, ''));
+		var urn = decodeURIComponent(aDetails.url.replace(configs.protocolHandlerUrl, ''));
+		if (!urn)
+			return null;
+
 		var url = this.redirectURNToURL(urn);
 		log(urn + ' => ' + url);
 		if (url) {
@@ -418,7 +421,7 @@ var URNRedirector = {
 			this.onBeforeRequest.bind(this),
 			{
 				urls: [
-					'*://*/urn-handler/*'
+					configs.protocolHandlerUrl + '*'
 				]
 			},
 			[

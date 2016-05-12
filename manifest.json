@@ -25,6 +25,8 @@
         "<all_urls>"
       ],
       "js": [
+        "common/Configs.js",
+        "common/common.js",
         "content_scripts/registerer.js"
       ],
       "run_at": "document_start"

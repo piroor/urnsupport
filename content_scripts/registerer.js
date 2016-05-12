@@ -4,7 +4,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-var handler = location.origin + '/urn-handler/%s';
-if (!navigator.isProtocolHandlerRegistered ||
-	!navigator.isProtocolHandlerRegistered('urn', handler))
-	navigator.registerProtocolHandler('urn', handler, 'URN Handler');
+configs.$loaded.then(function() {
+	if (configs.protocolHandlerUrl.indexOf(location.origin) !== 0)
+		return;
+
+	var handler = configs.protocolHandlerUrl + '%s';
+	if (!navigator.isProtocolHandlerRegistered ||
+		!navigator.isProtocolHandlerRegistered('urn', handler))
+		navigator.registerProtocolHandler('urn', handler, 'URN Handler');
+});
